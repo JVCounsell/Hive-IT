@@ -1,0 +1,11 @@
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\bin\Debug\netcoreapp2.0\Hive_IT.deps.json
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\bin\Debug\netcoreapp2.0\Hive_IT.runtimeconfig.json
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\bin\Debug\netcoreapp2.0\Hive_IT.runtimeconfig.dev.json
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\bin\Debug\netcoreapp2.0\Hive_IT.dll
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\bin\Debug\netcoreapp2.0\Hive_IT.pdb
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\obj\Debug\netcoreapp2.0\Hive_IT.csprojResolveAssemblyReference.cache
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\obj\Debug\netcoreapp2.0\Hive_IT.csproj.CoreCompileInputs.cache
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\obj\Debug\netcoreapp2.0\Hive_IT.AssemblyInfoInputs.cache
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\obj\Debug\netcoreapp2.0\Hive_IT.AssemblyInfo.cs
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\obj\Debug\netcoreapp2.0\Hive_IT.dll
+C:\Users\Vincent\Documents\Visual Studio 2017\Projects\Hive_IT(original)\Hive_IT\obj\Debug\netcoreapp2.0\Hive_IT.pdb

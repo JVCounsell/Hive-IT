@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Add User";
+}
+
+@model Hive_IT.Models.Account.RegisterViewModel
+
+<fieldset>
+    <h1>Add a New User</h1>
+    <br />
+
+    <form role="form" asp-action="Register">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="input-validation-error"></div>
+
+        <div class="form-group">
+            <label asp-for="FirstName"></label>
+            <input type="text" asp-for="FirstName" class="form-control"/>
+            <span asp-validation-for="FirstName" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LastName"></label>
+            <input type="text" asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="UserName"></label>
+            <input type="text" asp-for="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+             <label asp-for="Password"></label>
+             <input type="password" asp-for="Password" class="form-control"/>
+             <span asp-validation-for="Password" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ConfirmPassword"></label>
+            <input type="password" asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+        </div>
+
+
+        <div class="form-group">
+            <label asp-for="Role"></label>
+            <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
+            <span asp-validation-for="Role" class="field-validation-error"></span>
+        </div>
+
+        @{ 
+            //alternative for the selection
+          //  @Html.LabelFor(r => r.Role)
+           // @Html.DropDownListFor(r => r.Role, Model.RolesList)
+           // @Html.ValidationMessageFor(r => r.RolesList)
+        }
+
+        <div class="form-group">
+            <label asp-for="EmailAddress"></label>
+            <input type="email" asp-for="EmailAddress" class="form-control" />
+            <span asp-validation-for="EmailAddress" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PhoneNumber"></label>
+            <input type="text" asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+        </div>
+        
+        <div>
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+
+    </form>
+</fieldset>
+    

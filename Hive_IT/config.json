@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "IdentityDataContext": "Server=(localdb)\\mssqllocaldb;Database=Hive_IT_Identity;Trusted_Connection=True;"
+  }
+}

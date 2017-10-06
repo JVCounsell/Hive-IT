@@ -1,0 +1,43 @@
+﻿@{
+        ViewData["Title"] = "Roles";
+        //TODO: make this table only display edit and delete part for admins and maybe managers
+    }
+
+@model Hive_IT.Models.RoleListViewModel
+
+
+<h1>Available roles</h1>
+<br />
+    <p>Below are all the roles that are available to be assigned.</p>
+    <br /><br />
+
+<div class="=role-table">
+    <table class="table-striped table-bordered" >
+        <thead>
+            <tr>
+                <th class="col-sm-6">Name of Role</th>
+                <th textalign="center" class="col-sm-3" >Action</th>
+                <th textalign="center" class="col-sm-3">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var role in Model.Roles)
+            {
+                <tr>
+                    <td style="padding-left: 1em">@role</td>
+                    <td>
+                        <a class="btn btn-info" href="@Url.Action("")">Edit permissions</a>
+                    </td>
+                    <td>
+                        @using (Html.BeginForm("delete", "roles", new {id = role })) {
+                        <button value="DELETE" formnovalidate class=" col-sm-12 btn btn-danger" onclick="return confirm('Are you sure you want to delete this position?')">Delete Role</button>
+                        }
+                    </td>
+                </tr>
+             }
+        </tbody>
+    </table>
+</div>
+
+<br /><br />
+<a class="btn btn-success bottom-left"  href="@Url.Action("create", "roles")">+ Add a new role</a>

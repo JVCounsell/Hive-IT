@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Hive_IT.Data
+
+@inject SignInManager<ApplicationUser> _signInManager
+@inject UserManager<ApplicationUser> _userManager
+
+@if (_signInManager.IsSignedIn(User))
+{
+        <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post" asp-area="" class="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <button type="submit" class="btn btn-link navbar-btn navbar-link">Log Out</button>
+                </li>
+            </ul>
+        </form>    
+}
