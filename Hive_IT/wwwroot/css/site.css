@@ -3,6 +3,14 @@
     padding-bottom: 20px;
 }
 
+.input-validation-error{
+    color:red;
+}
+
+.field-validation-error {
+    color: red;
+}
+
 
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */

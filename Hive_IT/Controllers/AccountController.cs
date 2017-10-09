@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Hive_IT.Controllers
 {
-    //TODO: make is authorized calls
+    //TODO: make it authorized calls
     public class AccountController : Controller
     {
         //create places for private readonly managers so Identity data can be worked with
@@ -32,7 +32,12 @@ namespace Hive_IT.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Login()
-        {
+        {            
+            if (_signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("profile", "account", new {id = User.Identity.Name });
+            }
+
             //make sure it is a fresh login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             return View(new LoginViewModel());
@@ -104,6 +109,23 @@ namespace Hive_IT.Controllers
 
             //assign a selectable list of roles again in case there is some problem
             registration.RolesList = listOfRoles;
+            
+            // check if there are any users assigned with suggested username or email
+            var userAssigned = await _userManager.FindByNameAsync(registration.UserName);
+            var emailAssigned = await _userManager.FindByEmailAsync(registration.EmailAddress);
+
+            //if so return view with a message
+            if (userAssigned != null)
+            {
+                ModelState.AddModelError("", "Username already taken! Try another.");
+                return View(registration);
+            }
+
+            if (emailAssigned != null)
+            {
+                ModelState.AddModelError("", "Email already in use! Are they already another user?");
+                return View(registration);
+            }
 
             if (!ModelState.IsValid)
             {
@@ -157,11 +179,46 @@ namespace Hive_IT.Controllers
             return RedirectToAction("profile", "account", new { id = registration.UserName });
         }
          
-        //TODO: Code this
         [HttpGet]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List(int page = 0)
         {
-            return View();
+            //page setup group
+            var usersPerPage = 15; //TODO: maybe do trial and error or math to calculate what this number should be
+            var totalUsers = _userManager.Users.Count();
+            var totalPages = totalUsers / usersPerPage;
+            var nextPage = page + 1; // probably slightly better to have these calculated just here ...
+            var prevPage = page - 1; // instead of multiple places
+
+            //group for view to work with data
+            ViewBag.Prev = prevPage;
+            ViewBag.Next = nextPage;
+            ViewBag.HasPrevious = prevPage >= 0;
+            ViewBag.HasNext = nextPage < totalPages;
+
+            var usersSelection = _userManager.Users.OrderBy(n => n.UserName)
+                .Skip(usersPerPage * page).Take(usersPerPage).ToArray();
+
+            var selectedListUsers = new List<ListedUserViewModel>();
+
+            //conversion of application user to new model ensures all the data required is
+            //in one eaily accessed model instead of needing role manager as well   
+            foreach(var selectedUser in usersSelection)
+            {
+                var roleIn = await _userManager.GetRolesAsync(selectedUser);
+
+                var newListUser = new ListedUserViewModel
+                {
+                    First = selectedUser.FirstName,
+                    Last = selectedUser.LastName,
+                    Username = selectedUser.UserName,
+                    Created = selectedUser.DateCreated.ToString("D"),
+                    Position = roleIn.First()
+                };
+
+                selectedListUsers.Add(newListUser);
+            }
+
+            return View(selectedListUsers);
         }
 
         [HttpGet]
@@ -169,9 +226,8 @@ namespace Hive_IT.Controllers
         {
             var userName = id;
             if (string.IsNullOrEmpty(userName))
-            {
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+            {                
+                return RedirectToAction("list", "account");
             }
 
             var currentUser =  await _userManager.FindByNameAsync(userName);
@@ -179,12 +235,12 @@ namespace Hive_IT.Controllers
             if(currentUser == null)
             {
                 ModelState.AddModelError("", "Specified user was not found");
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+                return RedirectToAction("list", "account");
             }
 
             var rolesUserIsIn = await _userManager.GetRolesAsync(currentUser);
 
+            // made a new model so all the data required is in one model and easier to work with
             var userProfile = new UserViewModel
             {
                 FirstName = currentUser.FirstName,
@@ -206,9 +262,8 @@ namespace Hive_IT.Controllers
         {
             var userName = id;
             if (string.IsNullOrEmpty(userName))
-            {
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+            {                
+                return RedirectToAction("list", "account");
             }
 
             var currentUser = await _userManager.FindByNameAsync(userName);
@@ -216,8 +271,7 @@ namespace Hive_IT.Controllers
             if (currentUser == null)
             {
                 ModelState.AddModelError("", "Specified user was not found");
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+                return RedirectToAction("list", "account");
             }
 
             var result = await _userManager.DeleteAsync(currentUser);
@@ -228,13 +282,11 @@ namespace Hive_IT.Controllers
                 {
                     ModelState.AddModelError("", error);
                 }
-
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+                               
+                return RedirectToAction("list", "account");
             }
 
-            //TODO: Once list users page is created redirect to there
-            return RedirectToAction("index", "home");
+            return RedirectToAction("list", "account");
         }
 
         [HttpGet]
@@ -255,8 +307,7 @@ namespace Hive_IT.Controllers
 
             if (string.IsNullOrEmpty(userName))
             {
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+                return RedirectToAction("list", "account");
             }
 
             var specifiedUser = await _userManager.FindByNameAsync(userName);
@@ -264,8 +315,7 @@ namespace Hive_IT.Controllers
             if (specifiedUser == null)
             {
                 ModelState.AddModelError("", "Specified user was not found");
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+               return RedirectToAction("list", "account");
             }
 
             var rolesUserIsIn = await _userManager.GetRolesAsync(specifiedUser);
@@ -305,8 +355,7 @@ namespace Hive_IT.Controllers
 
             if (string.IsNullOrEmpty(userName))
             {
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+                 return RedirectToAction("list", "account");
             }
 
             var specifiedUser = await _userManager.FindByNameAsync(userName);
@@ -314,8 +363,7 @@ namespace Hive_IT.Controllers
             if (specifiedUser == null)
             {
                 ModelState.AddModelError("", "Specified user was not found");
-                //TODO: Once list users page is created redirect to there
-                return RedirectToAction("index", "home");
+                return RedirectToAction("list", "account");
             }
             var rolesUserIsIn = await _userManager.GetRolesAsync(specifiedUser);
 
@@ -402,7 +450,7 @@ namespace Hive_IT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel change)
         {            
-            //cannot get an Application User class just from Identity so break into 2 parts
+            //cannot get an Application User class just from User.Identity so break into 2 parts
             var currentUsername = User.Identity.Name;
             var currentUser = await _userManager.FindByNameAsync(currentUsername);
             

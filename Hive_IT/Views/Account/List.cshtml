@@ -1,6 +1,58 @@
 ﻿@{
     ViewData["Title"] = "List";
 }
+@model IEnumerable<Hive_IT.Models.ListedUserViewModel>  
 
-<h2>List</h2>
+    <h1>List of Users</h1>
+    <br />
 
+    @{
+        //TODO: figure out spacing between links
+     }
+<div class="pager">
+    @if (ViewBag.HasPrevious)
+    {
+        <a href="@Url.Action("list", "account", new {page = ViewBag.Prev })">&lt; &lt; Previous Page</a>
+    }
+    @if (ViewBag.HasNext)
+    {
+        <a href="@Url.Action("list", "account", new {page = ViewBag.Next })">&gt; &gt; Next Page</a>
+    }
+ </div>
+<div class="user-list">
+    <table class="table-striped table-bordered">
+        <thead>
+            <tr>
+                <th > First Name</th>
+                <th> Last Name</th>
+                <th> User Name</th>
+                <th> Name of Role</th>
+                <th> Date Created</th>
+                <th> Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var listedItem in Model)
+            {
+                <tr>
+                    <td><a href="@Url.Action("profile","account", new {id = listedItem.Username })"> @listedItem.First</a></td>
+                    <td><a href="@Url.Action("profile","account", new {id = listedItem.Username })"> @listedItem.Last</a></td>
+                    <td><a href="@Url.Action("profile","account", new {id = listedItem.Username })"> @listedItem.Username</a></td>
+                    <td> @listedItem.Position</td>
+                    <td> @listedItem.Created</td>
+                    <td>
+                        @using (Html.BeginForm("delete", "account", new { id = listedItem.Username }))
+                        { 
+                            <button type="submit" formnovalidate value="DELETE" class=" col-sm-12 btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
+                                Delete User
+                            </button>
+                        }
+                    </td>
+                </tr>
+             }
+        </tbody>
+    </table>
+</div>
+
+<br /><br />
+<a class="btn btn-success bottom-left" href="@Url.Action("register", "account")">+ Add a new User</a>

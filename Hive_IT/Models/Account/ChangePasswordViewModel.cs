@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace Hive_IT.Models.Account
 {
     public class ChangePasswordViewModel
-    {
-        //TODO: determine if this is how we want to do it, will require manual implementation of creating an error message if old password is wrong
+    {        
         [Required]
         [DataType(DataType.Password)]
         public string OldPassword { get; set; }
