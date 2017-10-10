@@ -41,11 +41,13 @@ namespace Hive_IT
                 .AddEntityFrameworkStores<ApplicationDataContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddTransient<DBContextSeedData>();
+
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, DBContextSeedData seeder)
         {
             if (env.IsDevelopment())
             {
@@ -59,6 +61,7 @@ namespace Hive_IT
             }
 
             app.UseAuthentication();
+            seeder.SeedAdminUser();
 
             app.UseMvc(routes =>
             {

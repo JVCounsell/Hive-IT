@@ -367,7 +367,6 @@ namespace Hive_IT.Controllers
             }
             var rolesUserIsIn = await _userManager.GetRolesAsync(specifiedUser);
 
-
             //populate list before sending model back
             edit.RolesList = listOfRoles;
 
