@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Hive_IT.Data;
 using Hive_IT.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hive_IT.Controllers
 {
     [Route("roles")]
+    [Authorize]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -38,12 +40,14 @@ namespace Hive_IT.Controllers
         }
 
         [HttpGet, Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost, Route("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(ApplicationRole applicationRole)
         {
             var roleName = applicationRole.Name;
@@ -53,11 +57,20 @@ namespace Hive_IT.Controllers
                 return View(applicationRole);
             }
 
-            var attemptedRole = await _roleManager.FindByNameAsync(roleName);
+            //just to highlight the importance of this name
+            if (roleName.ToLower() == "admin")
+            {
+                ModelState.AddModelError("", "Role name is reserved. Please pick another.");
+            }
+
+            //conversion so that all names follow the capitilize first lower rest convention
+            var Capped = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.ToTitleCase(roleName.ToLower());          
+
+            var attemptedRole = await _roleManager.FindByNameAsync(Capped);
 
             if (attemptedRole == null)
             {
-                attemptedRole = new IdentityRole(roleName);
+                attemptedRole = new IdentityRole(Capped);
                 var result = await _roleManager.CreateAsync(attemptedRole);
 
                 if (!result.Succeeded)
@@ -83,6 +96,7 @@ namespace Hive_IT.Controllers
         //TODO: Create an edit action to alter claims
         
         [HttpPost, Route("delete/{roleName}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string roleName)
         {
             if (string.IsNullOrWhiteSpace(roleName))

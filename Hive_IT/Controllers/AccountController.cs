@@ -77,6 +77,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -84,6 +85,7 @@ namespace Hive_IT.Controllers
             return RedirectToAction("Login");
         }
 
+        [Authorize]
         public IActionResult Register()
         {
             //setup to create a selectable list of all the roles
@@ -103,6 +105,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registration)
         {
@@ -139,6 +142,12 @@ namespace Hive_IT.Controllers
 
             if (!ModelState.IsValid)
             {
+                return View(registration);
+            }
+
+            if (registration.UserName.ToLower() == "defaultuser")
+            {
+                ModelState.AddModelError("", "Specified username is reserved. Please choose another.");
                 return View(registration);
             }
 
@@ -190,7 +199,8 @@ namespace Hive_IT.Controllers
         }
          
         [HttpGet]
-        public async Task<IActionResult> List(int page = 0)
+        [Authorize]
+        public async Task<IActionResult> List(int page = 0, int sorting=0)
         {
             //page setup group
             var usersPerPage = 15; //TODO: maybe do trial and error or math to calculate what this number should be
@@ -200,13 +210,35 @@ namespace Hive_IT.Controllers
             var prevPage = page - 1; // instead of multiple places
 
             //group for view to work with data
+            ViewBag.Page = page;
             ViewBag.Prev = prevPage;
             ViewBag.Next = nextPage;
             ViewBag.HasPrevious = prevPage >= 0;
             ViewBag.HasNext = nextPage < totalPages;
+            ViewBag.Count = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
+            if (0 > sorting || sorting > 2)
+            {
+                sorting = 0;
+            }
 
-            var usersSelection = _userManager.Users.OrderBy(n => n.UserName)
-                .Skip(usersPerPage * page).Take(usersPerPage).ToArray();
+
+            var users = _userManager.Users;
+                if (sorting == 0)
+            {
+                users = users.OrderBy(n => n.UserName);
+            } else if (sorting == 1)
+            {
+                users = users.OrderBy(n => n.FirstName);
+            }
+            else
+            {
+                users = users.OrderBy(n => n.LastName);
+            }
+
+            //easy to just get sorting as viewbag
+            ViewBag.Sorting = sorting;
+
+             var usersSelection = users.Skip(usersPerPage * page).Take(usersPerPage).ToArray();
 
             var selectedListUsers = new List<ListedUserViewModel>();
 
@@ -232,6 +264,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Profile(string id)
         {
             var userName = id;
@@ -262,12 +295,17 @@ namespace Hive_IT.Controllers
 
                 //since each user should only have one role just grab the first (only) of list
                 Role = rolesUserIsIn.First()
-            };            
+            };
+
+            //need to to know how many admins there are, as cannot allow deletion if only 1
+            var admins = await _userManager.GetUsersInRoleAsync("Admin");
+             ViewBag.Count= admins.Count();
 
             return View(userProfile);
         }
 
         [HttpPost]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             var userName = id;
@@ -282,6 +320,17 @@ namespace Hive_IT.Controllers
             {
                 ModelState.AddModelError("", "Specified user was not found");
                 return RedirectToAction("list", "account");
+            }
+
+            //prevent deletion of user if it is the only admin
+            if (await _userManager.IsInRoleAsync(currentUser , "Admin"))
+            {
+                var admins = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
+                if (admins < 2)
+                {
+                    ModelState.AddModelError("", "Need to always have at least one admin!");
+                    return RedirectToAction("list", "account");
+                }
             }
 
             var result = await _userManager.DeleteAsync(currentUser);
@@ -300,9 +349,16 @@ namespace Hive_IT.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             var userName = id;
+
+            // disable allowance of defaultuser to be edited as should be deleted once new admin created
+            if (userName.ToLower() == "defaultuser")
+            {
+                return RedirectToAction("list", "account");
+            }
 
             //setup to create a selectable list of all the roles
             var allRoles = _roleManager.Roles.OrderBy(r => r.Name).ToArray();
@@ -343,14 +399,27 @@ namespace Hive_IT.Controllers
                 RolesList = listOfRoles
             };
 
+            // setup to prevent changing of admin role if no other user has that role
+            if (rolesUserIsIn.First() == "Admin")
+            {
+                ViewBag.Count = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
+            }
             return View(userProfile);
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, EditUserViewModel edit)
         {
             var userName = id;
+            ViewBag.Count = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
+
+            // disable allowance of defaultuser to be edited as should be deleted once new admin created
+            if (userName.ToLower() == "defaultuser")
+            {
+                return RedirectToAction("list", "account");
+            }
 
             //setup to create a selectable list of all the roles
             var allRoles = _roleManager.Roles.OrderBy(r => r.Name).ToArray();
@@ -385,6 +454,29 @@ namespace Hive_IT.Controllers
                 return View(edit);
             }
 
+            //prevent defaultuser to be taken as username
+            if (edit.UserName.ToLower() == "defaultuser")
+            {
+                ModelState.AddModelError("", "Specified username is reserved. Please choose another.");
+                return View(edit);
+            }
+
+            //prevent 2 users from using same name
+            var nameExists = await _userManager.FindByNameAsync(edit.UserName);
+            if (nameExists != null)
+            {
+                ModelState.AddModelError("", "Username already in use. Choose another.");
+                return View(edit);
+            }
+
+            //prevent 2 users from using same email
+            var emailExists = await _userManager.FindByEmailAsync(edit.EmailAddress);
+            if (emailExists != null)
+            {
+                ModelState.AddModelError("", "Email already in use.");
+                return View(edit);
+            }
+
             //reassignment
             specifiedUser.FirstName = edit.FirstName;
             specifiedUser.LastName = edit.LastName;
@@ -393,6 +485,13 @@ namespace Hive_IT.Controllers
             specifiedUser.PhoneNumber = edit.PhoneNumber;
 
             var prevRole = rolesUserIsIn.First();
+
+            //get should prevent this but just for double security so always have an admin
+            if (prevRole == "Admin" && ViewBag.Count < 2)
+            {
+                ModelState.AddModelError("", "Cannot change from admin if there is only one currently!");
+                return View(edit);
+            }
 
             var updateResult = await _userManager.UpdateAsync(specifiedUser);
 

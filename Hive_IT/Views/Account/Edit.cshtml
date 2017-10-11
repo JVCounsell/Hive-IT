@@ -46,11 +46,40 @@
             <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="Role"></label>
-            <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
-            <span asp-validation-for="Role" class="field-validation-error"></span>
-        </div>
+        @{
+            if (Model.Role == "Admin")
+            {
+                if (ViewBag.Count >= 2)
+                {
+                    <div class="form-group">
+                        <label asp-for="Role"></label>
+                        <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
+                        <span asp-validation-for="Role" class="field-validation-error"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label asp-for="Role"></label>
+                        <select asp-for="Role" class="form-control">
+                            <option value= "Admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="Role" class="field-validation-error"></span>
+                    </div>
+
+                }
+
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="Role"></label>
+                    <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
+                    <span asp-validation-for="Role" class="field-validation-error"></span>
+                </div>
+
+            }
+        }        
         
         <div>
             <label>&nbsp;</label>

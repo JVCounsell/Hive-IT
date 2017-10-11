@@ -9,7 +9,7 @@ namespace Hive_IT.Models.Account
     public class LoginViewModel
     {
         [Required]
-        [MaxLength(30), MinLength(8)]
+        [MinLength(6)]
         [Display(Name = "Username")]
         public string UserName { get; set; }
 

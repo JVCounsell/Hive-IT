@@ -10,17 +10,15 @@ namespace Hive_IT.Models
     public class EditUserViewModel
     {
         [Required]
-        [MaxLength(25)]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required]
-        [MaxLength(30)]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [Required]
-        [MaxLength(30), MinLength(8)]
+        [MinLength(6)]
         [Display(Name = "Username")]
         public string UserName { get; set; }
 
@@ -30,7 +28,7 @@ namespace Hive_IT.Models
         public string Role { get; set; }
 
         [Required]
-        [EmailAddress, MaxLength(50)]
+        [EmailAddress]
         [Display(Name = "Email Address")]
         public string EmailAddress { get; set; }
 
