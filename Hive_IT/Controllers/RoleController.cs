@@ -91,6 +91,14 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("Index");
             }
 
+            //prevention of high authority roles
+            //TODO: if add claims change this to suit the change
+            if (roleName.ToLower() == "admin" || roleName.ToLower() == "manager")
+            {
+                ModelState.AddModelError("", "That role has deletion disabled");
+                return RedirectToAction("Index");
+            }
+
             var queriedRole = await _roleManager.FindByNameAsync(roleName);
             if (queriedRole == null)
             {

@@ -4,6 +4,15 @@
 
 @model Hive_IT.Models.UserViewModel
 
+    @{ 
+        //TODO: change this to maybe a <p> in a <div with specific class and style>
+    }
+@if(Model.UserName.ToLower() == "defaultuser")
+{
+    <h3 style="color: red"> Default user is only for setting up.<br />
+    Assign a new admin and then delete default ASAP!</h3>
+}
+
 <div class="profile">
     <div class="profile-content">
         <h1>@Model.FirstName @Model.LastName </h1>
@@ -18,8 +27,13 @@
     </div>    
     <br /><br />
    
-    <a class="btn btn-primary col-sm-2" href="@Url.Action("edit", "account", new { id =Model.UserName})">Edit</a>
-    
+    @if (Model.UserName.ToLower() != "defaultuser")
+    {
+        <a class="btn btn-primary col-sm-2" href="@Url.Action("edit", "account", new { id =Model.UserName})">Edit</a>
+    }
+      
+    @{ //TODO make this not available to case default user only admin
+    }
     @using (Html.BeginForm("delete", "account", new {id = Model.UserName})) {
     <button value="Delete" formnovalidate class="btn btn-danger col-sm-2" onclick="return confirm('Are you sure you want to delete this user?')" >Delete this user</button>
     }

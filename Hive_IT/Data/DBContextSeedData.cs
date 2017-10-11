@@ -63,7 +63,6 @@ namespace Hive_IT.Data
                 admin.PasswordHash = hashedPass;
                 var userStore = new UserStore<ApplicationUser>(_context);
                 await userStore.CreateAsync(admin);
-                await userStore.AddToRoleAsync(admin, "ADMIN");
             }            
             
             await _context.SaveChangesAsync();

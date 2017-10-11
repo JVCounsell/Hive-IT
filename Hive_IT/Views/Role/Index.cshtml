@@ -29,9 +29,15 @@
                         <a class="btn btn-info" href="@Url.Action("")">Edit permissions</a>
                     </td>
                     <td>
-                        @using (Html.BeginForm("delete", "roles", new {id = role })) {
-                        <button value="DELETE" formnovalidate class=" col-sm-12 btn btn-danger" onclick="return confirm('Are you sure you want to delete this position?')">Delete Role</button>
-                        }
+                        @{
+                            if (role.ToLower() != "admin" && role.ToLower() != "manager")
+                            {
+                                using (Html.BeginForm("delete", "roles", new { id = role }))
+                                {
+                                    <button value="DELETE" formnovalidate class=" col-sm-12 btn btn-danger" onclick="return confirm('Are you sure you want to delete this position?')">Delete Role</button>
+                                }
+                            }
+                        }   
                     </td>
                 </tr>
              }

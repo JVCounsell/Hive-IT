@@ -61,7 +61,17 @@ namespace Hive_IT.Controllers
             if (!result.Succeeded) {
                 ModelState.AddModelError("", "Login Error!");
                 return View();
-            }            
+            }
+
+
+            if (login.UserName.ToLower() == "defaultuser")
+            {
+                var defUser = await _userManager.FindByNameAsync("defaultuser");
+                if (!await _userManager.IsInRoleAsync(defUser, "Admin"))
+                {
+                    await _userManager.AddToRoleAsync(defUser, "Admin");
+                }
+            }
 
             return RedirectToAction("profile", "account", new { id = login.UserName });
         }
@@ -252,8 +262,8 @@ namespace Hive_IT.Controllers
 
                 //since each user should only have one role just grab the first (only) of list
                 Role = rolesUserIsIn.First()
-            };
-            
+            };            
+
             return View(userProfile);
         }
 
