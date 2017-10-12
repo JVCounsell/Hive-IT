@@ -3,14 +3,12 @@
 }
 
 @model Hive_IT.Models.UserViewModel
-
-    @{ 
-        //TODO: change this to maybe a <p> in a <div with specific class and style>
-    }
+       
 @if(Model.UserName.ToLower() == "defaultuser")
 {
-    <h3 style="color: red"> Default user is only for setting up.<br />
-    Assign a new admin and then delete default ASAP!</h3>
+    <div class="default-warning">
+        <p>Default user is only for setting up. Assign a new admin and then delete default ASAP!</p>
+    </div>
 }
 
 <div class="profile">
@@ -25,14 +23,18 @@
         <br />
         <p>Date Created: @Model.CreationDate</p>
     </div>    
-    <br /><br />
-   
-    @if (Model.UserName.ToLower() != "defaultuser")
+    <br />
+    
+    @if (User.IsInRole("Admin"))
     {
-        <a class="btn btn-primary col-sm-2" href="@Url.Action("edit", "account", new { id =Model.UserName})">Edit</a>
-    }
-      
-    @{ 
+        <br />
+
+        @if (Model.UserName.ToLower() != "defaultuser")
+        {
+            <a class="btn btn-primary col-sm-2" href="@Url.Action("edit", "account", new { id =Model.UserName})">Edit</a>
+        }
+
+        
         if (Model.Role == "Admin")
         {
             if (ViewBag.Count >= 2)
@@ -50,10 +52,21 @@
                 <button value="Delete" formnovalidate class="btn btn-danger col-sm-2" onclick="return confirm('Are you sure you want to delete this user?')">Delete this user</button>
             }
         }
-    } 
+        
 
-    <br /><br />
+        <br /><br />
+
+     }
+    else if (User.Identity.Name == Model.UserName)
+    {
+        <br />
+
+        @if (Model.UserName.ToLower() != "defaultuser")
+        {
+            <a class="btn btn-primary col-sm-2" href="@Url.Action("edit", "account", new { id =Model.UserName})">Edit</a>
+        }
+
+        <br /><br />
+    }
+
 </div>
-
-
-

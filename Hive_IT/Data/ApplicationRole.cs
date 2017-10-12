@@ -11,7 +11,5 @@ namespace Hive_IT.Data
         [Required]
         [Display(Name = "Name")]
         public string Name { get; set; }
-
-        //TODO: add claims to the roles
     }
 }

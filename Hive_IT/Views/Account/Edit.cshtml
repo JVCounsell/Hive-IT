@@ -3,9 +3,6 @@
 }
 
 @model Hive_IT.Models.EditUserViewModel
-@{
-    //TODO: Require proper authorized role to alter role 
-}
 
 <fieldset>
     <h1>Edit this Profile</h1>
@@ -47,23 +44,36 @@
         </div>
 
         @{
-            if (Model.Role == "Admin")
+            if (User.IsInRole("Admin"))
             {
-                if (ViewBag.Count >= 2)
+                if (Model.Role == "Admin")
                 {
-                    <div class="form-group">
-                        <label asp-for="Role"></label>
-                        <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
-                        <span asp-validation-for="Role" class="field-validation-error"></span>
-                    </div>
+                    if (ViewBag.Count >= 2)
+                    {
+                        <div class="form-group">
+                            <label asp-for="Role"></label>
+                            <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
+                            <span asp-validation-for="Role" class="field-validation-error"></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label asp-for="Role"></label>
+                            <select asp-for="Role" class="form-control">
+                                <option value="Admin">Admin</option>
+                            </select>
+                            <span asp-validation-for="Role" class="field-validation-error"></span>
+                        </div>
+
+                    }
+
                 }
                 else
                 {
                     <div class="form-group">
                         <label asp-for="Role"></label>
-                        <select asp-for="Role" class="form-control">
-                            <option value= "Admin">Admin</option>
-                        </select>
+                        <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
                         <span asp-validation-for="Role" class="field-validation-error"></span>
                     </div>
 
@@ -74,11 +84,13 @@
             {
                 <div class="form-group">
                     <label asp-for="Role"></label>
-                    <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
+                    <select asp-for="Role" class="form-control">
+                        <option value="@Model.Role">@Model.Role</option>
+                    </select>
                     <span asp-validation-for="Role" class="field-validation-error"></span>
                 </div>
-
             }
+
         }        
         
         <div>

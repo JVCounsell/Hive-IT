@@ -16,13 +16,12 @@ namespace Hive_IT.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager, ApplicationDataContext dataContext)
+        public RoleController(RoleManager<IdentityRole> roleManager)
         {
             _roleManager = roleManager;
         }
 
-        //TODO: implement authorize by role once seed user and role is figured out
-
+        
         [HttpGet, Route("")]
         public IActionResult Index()
         {
@@ -33,7 +32,7 @@ namespace Hive_IT.Controllers
             {
                 roleNames.Add(role.Name);
             }
-
+            
             var model = new RoleListViewModel { Roles = roleNames};
 
             return View(model);
@@ -83,18 +82,13 @@ namespace Hive_IT.Controllers
                     return View();
                 }
 
-                // TODO: Create a model for Role that has claims, and once done implement claims like so
-                // await _rolemanager.AddClaimAsync()
-
                 return RedirectToAction("Index");
             }
 
             ModelState.AddModelError("", "That role already exists!");
             return View(applicationRole);
         }
-
-        //TODO: Create an edit action to alter claims
-        
+                
         [HttpPost, Route("delete/{roleName}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string roleName)
@@ -105,8 +99,7 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("Index");
             }
 
-            //prevention of high authority roles
-            //TODO: if add claims change this to suit the change
+            //prevention of high authority roles deletion
             if (roleName.ToLower() == "admin" || roleName.ToLower() == "manager")
             {
                 ModelState.AddModelError("", "That role has deletion disabled");

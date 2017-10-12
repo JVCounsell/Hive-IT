@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Hive_IT.Controllers
 {
-    //TODO: make it authorized calls
     public class AccountController : Controller
     {
         //create places for private readonly managers so Identity data can be worked with
@@ -53,6 +52,17 @@ namespace Hive_IT.Controllers
                 return View();
             }
 
+            //asign the default user to admin role here if its not already, enables having at least one admin
+            if (login.UserName.ToLower() == "defaultuser")
+            {
+                var defUser = await _userManager.FindByNameAsync("defaultuser");
+                var defPassed = await _userManager.CheckPasswordAsync(defUser, login.Password);
+                if (defPassed && !await _userManager.IsInRoleAsync(defUser, "Admin"))
+                {
+                    await _userManager.AddToRoleAsync(defUser, "Admin");
+                }
+            }            
+
             //since remember me isn't wanted, declare rememberance parameter (1st bool) to false
              var result = await _signInManager.PasswordSignInAsync(
                 login.UserName, login.Password, false, false
@@ -61,17 +71,7 @@ namespace Hive_IT.Controllers
             if (!result.Succeeded) {
                 ModelState.AddModelError("", "Login Error!");
                 return View();
-            }
-
-
-            if (login.UserName.ToLower() == "defaultuser")
-            {
-                var defUser = await _userManager.FindByNameAsync("defaultuser");
-                if (!await _userManager.IsInRoleAsync(defUser, "Admin"))
-                {
-                    await _userManager.AddToRoleAsync(defUser, "Admin");
-                }
-            }
+            }            
 
             return RedirectToAction("profile", "account", new { id = login.UserName });
         }
@@ -85,7 +85,7 @@ namespace Hive_IT.Controllers
             return RedirectToAction("Login");
         }
 
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public IActionResult Register()
         {
             //setup to create a selectable list of all the roles
@@ -105,7 +105,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registration)
         {
@@ -203,9 +203,10 @@ namespace Hive_IT.Controllers
         public async Task<IActionResult> List(int page = 0, int sorting=0)
         {
             //page setup group
-            var usersPerPage = 15; //TODO: maybe do trial and error or math to calculate what this number should be
+            var usersPerPage = 2; //TODO: Delete this and enact other (Trial/development only)
+            // var usersPerPage = 15; //TODO: maybe do trial and error or math to calculate what this number should be
             var totalUsers = _userManager.Users.Count();
-            var totalPages = totalUsers / usersPerPage;
+            var totalPages = (int)Math.Ceiling(Convert.ToDouble(totalUsers)  / Convert.ToDouble(usersPerPage));
             var nextPage = page + 1; // probably slightly better to have these calculated just here ...
             var prevPage = page - 1; // instead of multiple places
 
@@ -353,6 +354,13 @@ namespace Hive_IT.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             var userName = id;
+            if (!User.IsInRole("Admin"))
+            {
+                if (User.Identity.Name != userName)
+                {
+                    return RedirectToAction("list", "account");
+                }
+            }
 
             // disable allowance of defaultuser to be edited as should be deleted once new admin created
             if (userName.ToLower() == "defaultuser")
@@ -413,6 +421,13 @@ namespace Hive_IT.Controllers
         public async Task<IActionResult> Edit(string id, EditUserViewModel edit)
         {
             var userName = id;
+            if (!User.IsInRole("Admin"))
+            {
+                if (User.Identity.Name != userName)
+                {
+                    return RedirectToAction("list", "account");
+                }
+            }
             ViewBag.Count = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
 
             // disable allowance of defaultuser to be edited as should be deleted once new admin created

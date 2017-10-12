@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="..\..\Hive_IT%2528original%2529\Hive_IT\Data\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

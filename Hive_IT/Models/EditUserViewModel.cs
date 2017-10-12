@@ -21,8 +21,7 @@ namespace Hive_IT.Models
         [MinLength(6)]
         [Display(Name = "Username")]
         public string UserName { get; set; }
-
-        //TODO: make this only available to admin and probably manager
+               
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; }

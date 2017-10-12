@@ -11,6 +11,15 @@
     color: red;
 }
 
+.default-warning{
+    font-size: 20px;
+    color: red;
+    border: 5px dashed orangered;
+}
+.default-warning p{
+    text-align:center;
+}
+
 
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */

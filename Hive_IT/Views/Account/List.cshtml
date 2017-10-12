@@ -12,11 +12,13 @@
 <div class="pager">
     @if (ViewBag.HasPrevious)
     {
-        <a href="@Url.Action("list", "account", new {page = ViewBag.Prev, sorting = ViewBag.Sorting })">&lt; &lt; Previous Page</a>
+        <a href="@Url.Action("list", "account", new {page = ViewBag.Prev, sorting = ViewBag.Sorting })"
+           class="btn btn-info">&lt; &lt; Previous Page</a>
     }
     @if (ViewBag.HasNext)
     {
-        <a href="@Url.Action("list", "account", new {page = ViewBag.Next, sorting = ViewBag.Sorting })">&gt; &gt; Next Page</a>
+        <a href="@Url.Action("list", "account", new {page = ViewBag.Next, sorting = ViewBag.Sorting })"
+           class="btn btn-info">&gt; &gt; Next Page</a>
     }
  </div>
 <div class="sorting-buttons">
@@ -48,7 +50,10 @@
                 <th> User Name</th>
                 <th> Name of Role</th>
                 <th> Date Created</th>
-                <th> Action</th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th> Action</th>
+                }                
             </tr>
         </thead>
         <tbody>
@@ -60,40 +65,46 @@
                     <td><a href="@Url.Action("profile","account", new {id = listedItem.Username })"> @listedItem.Username</a></td>
                     <td> @listedItem.Position</td>
                     <td> @listedItem.Created</td>
-                    <td>
-                        @{
-                            //do not display deletion button if only 1 admin
-                            if (listedItem.Position == "Admin")
-                            {
-                                if (ViewBag.Count >= 2)
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            @{
+                                //do not display deletion button if only 1 admin
+                                if (listedItem.Position == "Admin")
                                 {
-                                   using (Html.BeginForm("delete", "account", new { id = listedItem.Username }))
+                                    if (ViewBag.Count >= 2)
+                                    {
+                                        using (Html.BeginForm("delete", "account", new { id = listedItem.Username }))
+                                        {
+                                            <button type="submit" formnovalidate value="DELETE" class=" col-sm-12 btn-danger"
+                                                    onclick="return confirm('Are you sure you want to delete this user?')">
+                                                Delete User
+                                            </button>
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    using (Html.BeginForm("delete", "account", new { id = listedItem.Username }))
                                     {
                                         <button type="submit" formnovalidate value="DELETE" class=" col-sm-12 btn-danger"
                                                 onclick="return confirm('Are you sure you want to delete this user?')">
                                             Delete User
                                         </button>
                                     }
-
                                 }
                             }
-                            else
-                            {
-                                using (Html.BeginForm("delete", "account", new { id = listedItem.Username }))
-                                {
-                                    <button type="submit" formnovalidate value="DELETE" class=" col-sm-12 btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this user?')">
-                                        Delete User
-                                    </button>
-                                }
-                            }
-                        }                       
-                    </td>
+                        </td>
+                     }
+                    
                 </tr>
              }
         </tbody>
     </table>
 </div>
-
-<br /><br />
+<br />
+@if(User.IsInRole("Admin")){
+<br />
 <a class="btn btn-success bottom-left" href="@Url.Action("register", "account")">+ Add a new User</a>
+}
