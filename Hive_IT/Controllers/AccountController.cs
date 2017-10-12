@@ -478,7 +478,7 @@ namespace Hive_IT.Controllers
 
             //prevent 2 users from using same name
             var nameExists = await _userManager.FindByNameAsync(edit.UserName);
-            if (nameExists != null)
+            if (nameExists != null && edit.UserName != specifiedUser.UserName)
             {
                 ModelState.AddModelError("", "Username already in use. Choose another.");
                 return View(edit);
@@ -486,7 +486,7 @@ namespace Hive_IT.Controllers
 
             //prevent 2 users from using same email
             var emailExists = await _userManager.FindByEmailAsync(edit.EmailAddress);
-            if (emailExists != null)
+            if (emailExists != null && edit.EmailAddress != specifiedUser.Email)
             {
                 ModelState.AddModelError("", "Email already in use.");
                 return View(edit);
@@ -592,6 +592,11 @@ namespace Hive_IT.Controllers
             return RedirectToAction("index", "home");
             //once list is up use this and delete other
             //return RedirectToAction("List", "account");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return RedirectToAction("login", "account");
         }
     }
 }

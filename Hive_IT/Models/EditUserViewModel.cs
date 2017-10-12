@@ -33,6 +33,7 @@ namespace Hive_IT.Models
 
         [Required]
         [Phone]
+        [MinLength(7), MaxLength(13)]
         [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
 
