@@ -1,6 +1,5 @@
 ﻿@{
     ViewData["Title"] = "Roles";
-    //TODO: make this table only display delete part for admins and maybe managers
     }
 
 @model Hive_IT.Models.RoleListViewModel
@@ -11,13 +10,13 @@
     <br /><br />
 
 <div class="=role-table">
-    <table class="table-striped table-bordered" >
+    <table class="table-striped table-bordered text-center" >
         <thead>
             <tr>
-                <th class="col-sm-6">Name of Role</th>
+                <th class="col-sm-6 text-center">Name of Role</th>
                 @if (User.IsInRole("Admin"))
                 {
-                    <th textalign="center" class="col-sm-4">Action</th>
+                    <th textalign="center" class="col-sm-4 text-center">Action</th>
                 }
                                
             </tr>
