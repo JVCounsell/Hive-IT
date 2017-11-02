@@ -6,11 +6,11 @@
 
 <h1>Available roles</h1>
 <br />
-    <p>Below are all the roles that are available to be assigned.</p>
+    <p><b>Below are all the roles that are available to be assigned.</b></p>
     <br /><br />
 
 <div class="=role-table">
-    <table class="table-striped table-bordered text-center" >
+    <table class="table-bordered text-center col-sm-12" >
         <thead>
             <tr>
                 <th class="col-sm-6 text-center">Name of Role</th>
@@ -35,7 +35,9 @@
                                 using (Html.BeginForm("delete", "roles", new { id = role }))
                                 {
                                     <button value="DELETE" formnovalidate class=" col-sm-12 btn btn-danger" 
-                                            onclick="return confirm('Are you sure you want to delete this position?')">Delete Role</button>
+                                            onclick="return confirm('Are you sure you want to delete this position?')">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true">
+                                            </span> Delete Role</button>
                                 }
                             }
                         }
@@ -49,6 +51,9 @@
 <br />
 @if (User.IsInRole("Admin"))
 {
-    <br />
-    <a class="btn btn-success bottom-left" href="@Url.Action("create", "roles")">+ Add a new role</a>
+    <div class="col-sm-12">
+        <br />
+    </div>
+    <a class="btn btn-success bottom-left" href="@Url.Action("create", "roles")">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a new User</a>
 }

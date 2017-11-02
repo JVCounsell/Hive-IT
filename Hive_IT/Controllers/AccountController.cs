@@ -122,7 +122,12 @@ namespace Hive_IT.Controllers
 
             //assign a selectable list of roles again in case there is some problem
             registration.RolesList = listOfRoles;
-            
+
+            if (!ModelState.IsValid)
+            {
+                return View(registration);
+            }
+
             // check if there are any users assigned with suggested username or email
             var userAssigned = await _userManager.FindByNameAsync(registration.UserName);
             var emailAssigned = await _userManager.FindByEmailAsync(registration.EmailAddress);
@@ -140,17 +145,12 @@ namespace Hive_IT.Controllers
                 return View(registration);
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(registration);
-            }
-
             if (registration.UserName.ToLower() == "defaultuser")
             {
                 ModelState.AddModelError("", "Specified username is reserved. Please choose another.");
                 return View(registration);
             }
-
+            
             //assignment for model data to be converted to database data
             var newUser = new ApplicationUser
             {
@@ -171,7 +171,7 @@ namespace Hive_IT.Controllers
                     ModelState.AddModelError("", error);
                 }
 
-                return View();
+                return View(registration);
             }
             
             // finds a role based off of its name
@@ -192,7 +192,7 @@ namespace Hive_IT.Controllers
                     ModelState.AddModelError("", error);
                 }
 
-                return View();
+                return View(registration);
             }
 
             return RedirectToAction("profile", "account", new { id = registration.UserName });
@@ -203,8 +203,7 @@ namespace Hive_IT.Controllers
         public async Task<IActionResult> List(int page = 0, int sorting=0)
         {
             //page setup group
-            var usersPerPage = 2; //TODO: Delete this and enact other (Trial/development only)
-            // var usersPerPage = 15; //TODO: maybe do trial and error or math to calculate what this number should be
+            var usersPerPage = 14; //TODO: show n many buttons?
             var totalUsers = _userManager.Users.Count();
             var totalPages = (int)Math.Ceiling(Convert.ToDouble(totalUsers)  / Convert.ToDouble(usersPerPage));
             var nextPage = page + 1; // probably slightly better to have these calculated just here ...
@@ -517,7 +516,7 @@ namespace Hive_IT.Controllers
                     ModelState.AddModelError("", err);
                 }
 
-                return View();
+                return View(edit);
             }
 
 
@@ -527,7 +526,7 @@ namespace Hive_IT.Controllers
             if (Role == null)
             {
                 ModelState.AddModelError("", "Role does not exist!");
-                return View();
+                return View(edit);
             }
 
             //remove from previous role before addind to more as only one role allowed per user
@@ -539,7 +538,7 @@ namespace Hive_IT.Controllers
                     ModelState.AddModelError("", error);
                 }
 
-                return View();
+                return View(edit);
             }
 
             var roleResult = await _userManager.AddToRoleAsync(specifiedUser, Role.Name);
@@ -553,7 +552,7 @@ namespace Hive_IT.Controllers
                     ModelState.AddModelError("", error);
                 }
 
-                return View();
+                return View(edit);
             }
 
             return RedirectToAction("profile", "account", new { id = edit.UserName });

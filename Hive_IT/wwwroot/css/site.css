@@ -50,6 +50,29 @@ body {
     border-color: #0390ba;
 }
 
+thead {
+    color:white;
+    background-color: #111111;
+}
+
+.table-bordered thead tr th {
+    border-color: #727272;
+}
+
+.table-bordered tbody tr td {
+    border-right-color: #727272;
+    border-left-color: #727272;
+}
+
+.table-bordered tbody tr:last-of-type td {
+    border-bottom-color: #727272;
+}
+
+.table-bordered tbody tr:nth-of-type(2n) td {
+    background-color: #dbdbdb;
+}
+
+
 
 /* Custom Class styling*/
 .input-validation-error{
@@ -62,14 +85,46 @@ body {
 
 .default-warning{
     font-size: 20px;
-    color: red;
-    border: 5px dashed orangered;
+    color: black;
+    font-weight: bold;
+    border: 5px dashed darkorange;
+    background-color: red;
 }
 .default-warning p{
     text-align:center;
 }
 
+.description{
+    font-size: 1.4em;
+    text-indent: 3em;
+}
 
+#username-panel {
+    border-color: #222222;
+}
+
+#username-panel .panel-heading{
+    background-color: #222222;
+    color: white;
+}
+
+#role-panel {
+    border-color: #444444;
+}
+
+#role-panel .panel-heading {
+    background-color: #666666;
+    color: white;
+}
+
+#email-panel {
+    border-color: #2557a8;
+}
+
+#email-panel .panel-heading {
+    background-color: #3582ff;
+    color: white;
+}
 
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
