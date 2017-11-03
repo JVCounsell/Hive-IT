@@ -588,9 +588,67 @@ namespace Hive_IT.Controllers
                 return View();
             }
 
-            return RedirectToAction("index", "home");
-            //once list is up use this and delete other
-            //return RedirectToAction("List", "account");
+            return RedirectToAction("list", "account");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ResetPassword(string id)
+        {
+            var username = id;
+            ViewBag.Name = username;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                RedirectToAction("list", "account");
+            }
+
+            var requestedUser = await _userManager.FindByNameAsync(username);
+
+            if (requestedUser == null)
+            {
+                ModelState.AddModelError("", "Specified user was not found!");
+                return RedirectToAction("list", "account");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ResetPassword(string id, ResetPasswordViewModel reset)
+        {
+            var username = id;
+            ViewBag.Name = username;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                RedirectToAction("list", "account");
+            }
+
+            var requestedUser = await _userManager.FindByNameAsync(username);
+
+            if (requestedUser == null)
+            {
+                ModelState.AddModelError("", "Specified user was not found!");
+                return RedirectToAction("list", "account");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(requestedUser);
+            var resetResult = await _userManager.ResetPasswordAsync(requestedUser, resetToken, reset.NewTemporaryPassword);
+
+            if (!resetResult.Succeeded)
+            {
+                ModelState.AddModelError("", "Password Reset Failed");
+                return View();
+            }
+
+            return RedirectToAction("profile", "account", new {id = username });
         }
 
         public IActionResult AccessDenied()

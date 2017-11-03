@@ -78,7 +78,8 @@
             }
         }
 
-
+        <a class="btn btn-warning" href="@Url.Action("ResetPassword", "account", new { id =Model.UserName})">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Reset Password for this user</a>
         <br /><br />
 
      }
