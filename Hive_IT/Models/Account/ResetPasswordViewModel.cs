@@ -9,6 +9,7 @@ namespace Hive_IT.Models.Account
     public class ResetPasswordViewModel
     {
         [Required]
+        [Display(Name = "New Temporary Password")]
         [DataType(DataType.Password)]
         public string NewTemporaryPassword { get; set; }
 

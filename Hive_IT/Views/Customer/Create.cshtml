@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Add a Customer";
+}
+@model Hive_IT.Models.Customers.CreateCustomerViewModel
+
+<fieldset>
+    <h1 class="text-center">Add a new Customer</h1>
+    <br />
+
+    <form asp-action="Create" role="form">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="input-validation-error"></div>
+
+        <div class="form-group col-sm-12">
+            <label asp-for="FirstName"></label> 
+            <input type="text" asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-sm-12">
+            <label asp-for="LastName"></label>
+            <input type="text" asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="field-validation-error"></span>
+        </div>
+
+        <div>
+            <h2 class="text-center" style="font-size: 1.8em">Optional Fields</h2>
+        </div>
+
+        <div class="form-group col-sm-12">
+            <label asp-for="Email"></label>
+            <input type="text" asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-sm-12">
+            <label asp-for="PhoneNumber" ></label>
+            <input type="text" asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+        </div>
+        
+        <div class="form-group col-sm-6">
+            <label asp-for="StreetAddress"></label>
+            <input type="text" asp-for="StreetAddress" class="form-control" />
+            <span asp-validation-for="StreetAddress" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label asp-for="City"></label>
+            <input type="text" asp-for="City" class="form-control" />
+            <span asp-validation-for="City" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label asp-for="ProvState"></label>
+            <input type="text" asp-for="ProvState" class="form-control" />
+            <span asp-validation-for="ProvState" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-sm-6">
+            <label asp-for="Country"></label>
+            <input type="text" asp-for="Country" class="form-control" />
+            <span asp-validation-for="Country" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-sm-6">
+            <label asp-for="Postal"></label>
+            <input type="text" asp-for="Postal" class="form-control" />
+            <span asp-validation-for="Postal" class="field-validation-error"></span>
+        </div>   
+                
+        <div class="text-center">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus"> Add Customer</span></button>
+        </div>
+    </form>
+
+</fieldset>
+
+
+

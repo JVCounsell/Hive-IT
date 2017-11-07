@@ -37,6 +37,12 @@ namespace Hive_IT
                 options.UseSqlServer(connectionString);
             });
 
+            services.AddDbContext<CustomerDataContext>(options =>
+            {
+                var connectionString = configuration.GetConnectionString("CustomerDataContext");
+                options.UseSqlServer(connectionString);
+            });
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDataContext>()
                 .AddDefaultTokenProviders();

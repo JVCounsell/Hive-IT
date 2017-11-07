@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Hive_IT.Models
+namespace Hive_IT.Data
 {
     public class EditUserViewModel
     {
