@@ -11,9 +11,10 @@ using System;
 namespace Hive_IT.Migrations.CustomerData
 {
     [DbContext(typeof(CustomerDataContext))]
-    partial class CustomerDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171113223346_AlteredColumnNames")]
+    partial class AlteredColumnNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

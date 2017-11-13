@@ -1,0 +1,28 @@
+﻿@model Hive_IT.Data.CustomerPhoneNumber
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <fieldset>
+            <form asp-action="AddPhone" role="form">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="input-validation-error"></div>
+
+                <div class="form-group">
+                    <label asp-for="PhoneNumber"></label>
+                    <input type="text" asp-for="PhoneNumber " class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+                </div>
+
+                @Html.HiddenFor(v => v.CustomerId)
+
+                <div>
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Phone
+                    </button>
+                </div>
+            </form>
+        </fieldset>
+    </div>
+</div>

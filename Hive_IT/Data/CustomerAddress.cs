@@ -8,7 +8,8 @@ namespace Hive_IT.Data
 {
     public class CustomerAddress
     {
-        public long Id { get; set; }
+        [Key]
+        public long AddressId { get; set; }
         
         [Display(Name = "Street Address")]
         public string StreetAddress { get; set; }

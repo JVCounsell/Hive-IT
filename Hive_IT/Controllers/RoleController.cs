@@ -15,10 +15,12 @@ namespace Hive_IT.Controllers
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager)
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         
@@ -113,6 +115,14 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("Index");
 
             }
+
+            var Users = await _userManager.GetUsersInRoleAsync(roleName);
+            if (Users.Any())
+            {
+                ModelState.AddModelError("", "Role has users, reassign/delete them first!");
+                return RedirectToAction("Index");
+            }
+            
 
             var result = await _roleManager.DeleteAsync(queriedRole);
 

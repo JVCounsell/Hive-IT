@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace Hive_IT.Data
 {
     public class CustomerEmail
-    {
-        [Required]
+    {      
         [Key]
+        public long EmailId { get; set; }
+        
         [EmailAddress]
         public string Email { get; set; }
 

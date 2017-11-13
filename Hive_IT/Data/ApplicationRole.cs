@@ -9,6 +9,8 @@ namespace Hive_IT.Data
     public class ApplicationRole
     {
         [Required]
+        [RegularExpression(@"^[a-zA-Z][a-zA-z0-9_.,'-]*$",
+            ErrorMessage = "First character must be a letter and the rest must be alphanumeric or one of (_-.,')") ]
         [Display(Name = "Name")]
         public string Name { get; set; }
     }

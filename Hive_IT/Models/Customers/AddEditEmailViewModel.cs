@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Hive_IT.Models.Customers
 {
-    public class CustomerProfileViewModel
-    {
-        [Required]
+    public class AddEditEmailViewModel
+    {       
         [Display(Name = "Given Name")]
         public string Given { get; set; }
-        [Required]
         public string Surname { get; set; }
-       
+
         public DateTime Creation { get; set; }
         public long CusId { get; set; }
 
         public List<CustomerPhoneNumber> Phones { get; set; }
         public List<CustomerEmail> Emails { get; set; }
         public List<CustomerAddress> Addresses { get; set; }
+
+        public CustomerEmail AlterEmail { get; set; }
     }
 }

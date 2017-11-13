@@ -11,9 +11,10 @@ using System;
 namespace Hive_IT.Migrations.CustomerData
 {
     [DbContext(typeof(CustomerDataContext))]
-    partial class CustomerDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171113220547_updatedEmail")]
+    partial class updatedEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +41,7 @@ namespace Hive_IT.Migrations.CustomerData
 
             modelBuilder.Entity("Hive_IT.Data.CustomerAddress", b =>
                 {
-                    b.Property<long>("AddressId")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("City");
@@ -56,7 +57,7 @@ namespace Hive_IT.Migrations.CustomerData
 
                     b.Property<string>("StreetAddress");
 
-                    b.HasKey("AddressId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
@@ -65,14 +66,14 @@ namespace Hive_IT.Migrations.CustomerData
 
             modelBuilder.Entity("Hive_IT.Data.CustomerEmail", b =>
                 {
-                    b.Property<long>("EmailId")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<long>("CustomerId");
 
                     b.Property<string>("Email");
 
-                    b.HasKey("EmailId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 

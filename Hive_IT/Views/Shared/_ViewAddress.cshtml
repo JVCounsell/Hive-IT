@@ -1,0 +1,31 @@
+﻿@model Hive_IT.Data.CustomerAddress
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        @if (Model.StreetAddress != null)
+        {
+            <b>St: </b>@Model.StreetAddress
+        }
+
+        @if (Model.City != null)
+        {
+            <b>City: </b>@Model.City
+        }
+
+        @if (Model.ProvState != null)
+        {
+            <b>Pr/St: </b>@Model.ProvState
+        }
+
+        @if (Model.Country != null)
+        {
+            <b>Country: </b>@Model.Country
+        }
+
+        @if (Model.Postal != null)
+        {
+            <b>Postal/Zip: </b>@Model.Postal
+        }        
+    </div>
+
+</div>           

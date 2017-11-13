@@ -361,6 +361,11 @@ namespace Hive_IT.Controllers
                 }
             }
 
+            if (string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("list", "account");
+            }
+
             // disable allowance of defaultuser to be edited as should be deleted once new admin created
             if (userName.ToLower() == "defaultuser")
             {
@@ -376,11 +381,6 @@ namespace Hive_IT.Controllers
             {
                 var roleItem = new SelectListItem { Value = role.Name, Text = role.Name };
                 listOfRoles.Add(roleItem);
-            }
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                return RedirectToAction("list", "account");
             }
 
             var specifiedUser = await _userManager.FindByNameAsync(userName);
@@ -429,6 +429,11 @@ namespace Hive_IT.Controllers
             }
             ViewBag.Count = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
 
+            if (string.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("list", "account");
+            }
+
             // disable allowance of defaultuser to be edited as should be deleted once new admin created
             if (userName.ToLower() == "defaultuser")
             {
@@ -444,11 +449,6 @@ namespace Hive_IT.Controllers
             {
                 var roleItem = new SelectListItem { Value = role.Name, Text = role.Name };
                 listOfRoles.Add(roleItem);
-            }
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                 return RedirectToAction("list", "account");
             }
 
             var specifiedUser = await _userManager.FindByNameAsync(userName);
