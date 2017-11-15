@@ -5,7 +5,7 @@
 @model Hive_IT.Models.Account.RegisterViewModel
 
 <fieldset>
-    <h1>Add a New User</h1>
+    <h1 class="text-center">Add a New User</h1>
     <br />
 
     <form role="form" asp-action="Register">
@@ -49,14 +49,7 @@
             <select asp-for="Role" asp-items="Model.RolesList" class="form-control"></select>
             <span asp-validation-for="Role" class="field-validation-error"></span>
         </div>
-
-        @{ 
-            //alternative for the selection
-          //  @Html.LabelFor(r => r.Role)
-           // @Html.DropDownListFor(r => r.Role, Model.RolesList)
-           // @Html.ValidationMessageFor(r => r.RolesList)
-        }
-
+        
         <div class="form-group">
             <label asp-for="EmailAddress"></label>
             <input type="email" asp-for="EmailAddress" class="form-control" />
@@ -69,9 +62,13 @@
             <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
         </div>
         
-        <div>
+        <div class="clearfix">
             <label>&nbsp;</label>
-            <button type="submit" class="btn btn-primary"> Register</button>
+            <button type="submit" class="btn btn-primary pull-left"> Register</button>
+
+            <a class="btn btn-danger pull-right" asp-action="List">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
         </div>
 
     </form>

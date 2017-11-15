@@ -3,14 +3,18 @@
 }
 @model Hive_IT.Models.Customers.AddEditAddressViewModel
 
-<div><br /></div>
+<div class="clearfix">
+    <br />
+    <a class="btn btn-primary pull-left" asp-action="List">
+        <span class="glyphicon glyphicon-arrow-left"></span> Return To List
+    </a>
+</div>
 <div class="panel panel-info text-center">
     <div class=" panel-heading">
         <h2>@Model.Given @Model.Surname</h2>
     </div>
     <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
 </div>
-<br />
 
 @{
     if (Model.Phones.Any())
@@ -34,6 +38,11 @@
         </div>
     }
 
+    <div class="clearfix">
+        <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CusId">
+            <span class="glyphicon glyphicon-stop"></span> Cancel Edit
+        </a>
+    </div>
     if (Model.Addresses.Any())
     {
         <div class="panel-group text-center">

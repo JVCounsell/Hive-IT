@@ -1,0 +1,99 @@
+﻿@model List<Hive_IT.Models.Customers.ListedCustomerViewModel>
+
+@{
+    ViewData["Title"] = "List of Customers";
+}
+
+<h1 class="text-center">List of Customers</h1>
+<div>
+    <ul class="pager">
+        @if (ViewBag.HasPrevious)
+        {
+            <li class="previous btn"><a href="@Url.Action("list", "customer", new {page = ViewBag.Prev, sorting = ViewBag.Sorting })">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Previous Page</a></li>
+        }
+        @if (ViewBag.HasNext)
+        {
+            <li class="next btn"><a href="@Url.Action("list", "customer", new {page = ViewBag.Next, sorting = ViewBag.Sorting })">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> Next Page</a></li>
+        }
+    </ul>   
+</div>
+<div class="sorting-buttons">
+    <p><b>Sort By: </b></p>
+
+    @{ 
+        var names = new string[] { "Given Name", "Surname" };
+
+         for (int i = 0; i < 2; i++)
+         {
+            if (i == ViewBag.Sorting)
+            {
+                <a class="btn btn-primary" style="border: 2px solid #031cbc"
+                   href="@Url.Action("List", "Customer", new {page = 0, sorting = i})">@names[i]</a>
+            }
+            else
+            {
+                <a class="btn btn-primary" href="@Url.Action("List", "Customer", new {page = 0, sorting = i})">@names[i]</a>
+            }
+        }
+    }
+
+</div><br />
+
+<table class="table text-center table-bordered col-sm-12">
+    <thead>
+        <tr >
+                <th class="text-center"> Given Name </th>
+                <th class="text-center"><a></a> Surname </th>
+                <th class="text-center"> Date Created </th>
+                <th class="text-center"> Email </th>
+                <th class="text-center"> Phone </th>
+                @if (User.IsInRole("Admin"))
+                {
+                    <th class="text-center"> Action</th>
+                }
+                
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                <a href="@Url.Action("Profile", "Customer", new {id = item.ItemID})"> @item.GivenName</a>
+            </td>
+            <td>
+                <a href="@Url.Action("Profile", "Customer", new {id = item.ItemID})"> @item.Surname</a> 
+            </td>
+            <td>
+                @item.Created
+            </td>
+            <td>
+                @item.FirstEmail
+            </td>
+            <td>
+                @item.FirstPhone
+            </td>            
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        @using (Html.BeginForm("Delete", "Customer", new { id = item.ItemID }))
+                        {
+                        <button type="submit" formnovalidate value="DELETE" class="btn btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this Customer?')">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer
+                        </button>
+                        }
+                    </td>                   
+                }             
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="col-sm-12">
+   <br />
+</div>
+<a class="btn btn-success" asp-action="Create">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Customer
+</a>

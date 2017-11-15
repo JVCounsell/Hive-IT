@@ -3,6 +3,8 @@
 }
 @model Hive_IT.Models.Customers.CreateCustomerViewModel
 
+
+
 <fieldset>
     <h1 class="text-center">Add a new Customer</h1>
     <br />
@@ -75,6 +77,14 @@
             <button type="submit" class="btn btn-primary">
             <span class="glyphicon glyphicon-plus"> Add Customer</span></button>
         </div>
+
+        <div class="clearfix text-center">
+            <br />
+            <a class="btn btn-danger" asp-action="List">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+
     </form>
 
 </fieldset>

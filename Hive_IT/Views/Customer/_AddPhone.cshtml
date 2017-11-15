@@ -22,6 +22,12 @@
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Phone
                     </button>
                 </div>
+
+                <div class="clearfix">
+                    <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CustomerId">
+                        <span class="glyphicon glyphicon-stop"></span> Cancel
+                    </a>
+                </div>
             </form>
         </fieldset>
     </div>

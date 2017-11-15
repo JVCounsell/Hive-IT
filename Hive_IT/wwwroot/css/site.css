@@ -72,6 +72,15 @@ thead {
     background-color: #dbdbdb;
 }
 
+.btn-group form{
+    display:inline
+}
+
+.btn-group form button {
+   border-bottom-left-radius: 0;
+   border-top-left-radius: 0;
+}
+
 
 
 /* Custom Class styling*/

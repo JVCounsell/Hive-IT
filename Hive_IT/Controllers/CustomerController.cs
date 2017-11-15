@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Hive_IT.Data;
 using Hive_IT.Models.Customers;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Hive_IT.Controllers
 {
+    [Authorize]
     public class CustomerController : Controller
     {
         private readonly CustomerDataContext _db;
@@ -18,8 +20,65 @@ namespace Hive_IT.Controllers
         {
             _db = db;
         }
+                
+        [HttpGet]
+        public IActionResult List(int page = 0, int sorting = 0)
+        {
+            var totalCustomers = _db.Customers.Count();
+            var customersPerPage = 14;
+            var totalpages = (int)Math.Ceiling(Convert.ToDouble(totalCustomers) / Convert.ToDouble(customersPerPage));
+            var nextPage = page + 1;
+            var previousPage = page - 1;
+            
+            ViewBag.Prev = previousPage;
+            ViewBag.Next = nextPage;
+            ViewBag.HasPrevious = previousPage >=  0;
+            ViewBag.HasNext = nextPage < totalpages;
 
-        //TODO: Create a List of Customers
+            if (sorting < 0 || sorting > 1)
+            {
+                sorting = 0;
+            }
+
+            ViewBag.Sorting = sorting;
+
+            var customers = new List<Customer>();
+            if (sorting == 0)
+            {
+                customers = _db.Customers.OrderBy(c => c.FirstName).ToList();
+            }
+            else
+            {
+                customers = _db.Customers.OrderBy(c => c.LastName).ToList();
+            }
+            var selectedCustomers = customers.Skip(customersPerPage * page).Take(customersPerPage).ToList();
+
+            var listedCustomers = new List<ListedCustomerViewModel>();
+
+            foreach(var customer in selectedCustomers)
+            {
+
+                var listCustomer = new ListedCustomerViewModel
+                {
+                    GivenName = customer.FirstName,
+                    Surname = customer.LastName,
+                    Created = customer.DateCreated.ToString("D"),
+                    ItemID = customer.CustomerId
+                };
+                if (_db.Emails.Any(e => e.CustomerId == customer.CustomerId))
+                {
+                    listCustomer.FirstEmail = _db.Emails.FirstOrDefault(e => e.CustomerId == customer.CustomerId).Email;
+                }
+                if (_db.PhoneNumbers.Any(p => p.CustomerId == customer.CustomerId))
+                {
+                    listCustomer.FirstPhone = _db.PhoneNumbers.FirstOrDefault(p => p.CustomerId == customer.CustomerId).PhoneNumber;
+                }
+
+                listedCustomers.Add(listCustomer);
+            }
+
+            return View(listedCustomers);
+        }
 
         [HttpGet]
         public IActionResult Profile(long id)
@@ -28,7 +87,7 @@ namespace Hive_IT.Controllers
             var customerToFind = _db.Customers.FirstOrDefault(x => x.CustomerId == id);
             if (customerToFind == null)
             {
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             //if it does send all data of customer to new model to be displayed
@@ -53,7 +112,7 @@ namespace Hive_IT.Controllers
             var customerToFind = _db.Customers.FirstOrDefault(x => x.CustomerId == id);
             if (customerToFind == null)
             {
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             //if it does send all data of customer to new model to be displayed
@@ -78,7 +137,7 @@ namespace Hive_IT.Controllers
             var customerToFind = _db.Customers.FirstOrDefault(x => x.CustomerId == id);
             if (customerToFind == null)
             {
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             //assign the rest of the parts of the model with existing data so model can be resent
@@ -179,16 +238,16 @@ namespace Hive_IT.Controllers
 
             return RedirectToAction("Profile", "customer", new {id = newestCustomer.CustomerId });
         }
-
+               
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(long id)
         {
             //make sure customer with id exists
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (requested == null)
-            {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+            {                
+                return RedirectToAction("List");
             }
             
             //check if any associated emails exist, and if so remove from db
@@ -224,9 +283,8 @@ namespace Hive_IT.Controllers
             //remove customer form db and save changes
             _db.Remove(requested);
             _db.SaveChanges();
-
-            //TODO: redirect to list once created
-            return RedirectToAction("Create");
+            
+            return RedirectToAction("List");
         }
 
         [HttpPost]
@@ -234,15 +292,9 @@ namespace Hive_IT.Controllers
         {
             //make sure customer with id exists
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndEmail(requested, id, em) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
-            }
-            //ensure there is a value for em
-            if (string.IsNullOrWhiteSpace(em))
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
+                return ValidCustomerIdAndEmail(requested, id, em);
             }
 
             //make sure there is an attatched email to the customer
@@ -265,16 +317,10 @@ namespace Hive_IT.Controllers
         {
             //make sure customer with id exists
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndLong(requested, id, ph) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
-            }
-            //ensure there is a numeric value for ph
-            if (ph <= 0)
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
-            }
+                return ValidCustomerIdAndLong(requested, id, ph);
+            }            
 
             //make sure there is an attatched phone to the customer
             if (_db.PhoneNumbers.Any(p => p.CustomerId == id))
@@ -296,15 +342,9 @@ namespace Hive_IT.Controllers
         {            
             //make sure customer with id exists
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndLong(requested, id, ml) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
-            }
-            //ensure there is a numeric value for ml
-            if (ml <= 0)
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
+                return ValidCustomerIdAndLong(requested, id, ml);
             }
 
             //make sure there is an attatched address to the customer
@@ -327,17 +367,11 @@ namespace Hive_IT.Controllers
         {
             //make sure customer with id exists
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndEmail(requested, id, em) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return ValidCustomerIdAndEmail(requested, id, em);
             }
-            //ensure there is a value for em
-            if (string.IsNullOrWhiteSpace(em))
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
-            }
-                       
+
             var editModel = new AddEditEmailViewModel();
 
             //make sure there is an attatched email to the customer
@@ -364,15 +398,9 @@ namespace Hive_IT.Controllers
         {
             //make sure customer with id exists
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndEmail(requested, id, em) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
-            }
-            //ensure there is a value for em
-            if (string.IsNullOrWhiteSpace(em))
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
+                return ValidCustomerIdAndEmail(requested, id, em);
             }
 
             var edited = new AddEditEmailViewModel
@@ -412,17 +440,11 @@ namespace Hive_IT.Controllers
         public IActionResult EditPhone(long id, long ph)
         {
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndLong(requested, id, ph) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return ValidCustomerIdAndLong(requested, id, ph);
             }
-            //ensure there is a value for ph
-            if (ph <= 0)
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
-            }
-                        
+
             var editModel = new AddEditPhoneViewModel();
 
             //make sure there is an attatched phone to the customer
@@ -448,15 +470,9 @@ namespace Hive_IT.Controllers
         public IActionResult EditPhone(long id, long ph, CustomerPhoneNumber editPhone)
         {
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndLong(requested, id, ph) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
-            }
-            //ensure there is a value for ph
-            if (ph <= 0)
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
+                return ValidCustomerIdAndLong(requested, id, ph);
             }
 
             var edited = new AddEditPhoneViewModel
@@ -497,17 +513,11 @@ namespace Hive_IT.Controllers
         public IActionResult EditAddress(long id, long ml)
         {
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndLong(requested, id, ml) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return ValidCustomerIdAndLong(requested, id, ml);
             }
-            //ensure there is a value for ml
-            if (ml <= 0)
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
-            }
-                        
+
             var editModel = new AddEditAddressViewModel();
 
             //make sure there is an attatched address to the customer
@@ -533,15 +543,9 @@ namespace Hive_IT.Controllers
         public IActionResult EditAddress(long id, CustomerAddress editAdd, long ml)
         {
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
-            if (requested == null)
+            if (ValidCustomerIdAndLong(requested, id, ml) != null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
-            }
-            //ensure there is a value for ml
-            if (ml <= 0)
-            {
-                return RedirectToAction("Profile", "Customer", new { id = id });
+                return ValidCustomerIdAndLong(requested, id, ml);
             }
 
             var edited = new AddEditAddressViewModel
@@ -588,8 +592,7 @@ namespace Hive_IT.Controllers
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             var newEmail = new CustomerEmail { CustomerId = id };
@@ -605,8 +608,7 @@ namespace Hive_IT.Controllers
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             var additional = new AddEditEmailViewModel
@@ -637,8 +639,7 @@ namespace Hive_IT.Controllers
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             var newPhone = new CustomerPhoneNumber { CustomerId = id};
@@ -654,8 +655,7 @@ namespace Hive_IT.Controllers
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             var addedPhone = new AddEditPhoneViewModel
@@ -684,8 +684,7 @@ namespace Hive_IT.Controllers
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             var newAdd = new CustomerAddress { CustomerId = id };
@@ -701,8 +700,7 @@ namespace Hive_IT.Controllers
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
-                //TODO: redirect to list once created
-                return RedirectToAction("Create");
+                return RedirectToAction("List");
             }
 
             var added = new AddEditAddressViewModel
@@ -727,6 +725,37 @@ namespace Hive_IT.Controllers
             return RedirectToAction("profile", "customer", new { id = id });
         }
             
+        //Check if there is a customer and a valid address or phone long identifier
+        private IActionResult ValidCustomerIdAndLong(Customer checkCustomer, long Identification, long longCheck)
+        {
+            if (checkCustomer == null)
+            {
+                return RedirectToAction("List", "Customer");
+            }
+            //ensure there is a value for longCheck
+            if (longCheck <= 0)
+            {
+                return RedirectToAction("Profile", "Customer", new { id = Identification });
+            }
+
+            return null;
+        }
+
+        //Check if there is a customer and a valid address or phone long identifier
+        private IActionResult ValidCustomerIdAndEmail(Customer checkCustomer, long Identification, string emailCheck)
+        {
+            if (checkCustomer == null)
+            {
+                return RedirectToAction("List", "Customer");
+            }
+            //ensure there is a value for longCheck
+            if (string.IsNullOrWhiteSpace(emailCheck))
+            {
+                return RedirectToAction("Profile", "Customer", new { id = Identification });
+            }
+
+            return null;
+        }
 
         //Email View Model filler to fill out customer info
         private AddEditEmailViewModel FillEditEmail (Customer givenCustomer, AddEditEmailViewModel toFill)

@@ -210,7 +210,6 @@ namespace Hive_IT.Controllers
             var prevPage = page - 1; // instead of multiple places
 
             //group for view to work with data
-            ViewBag.Page = page;
             ViewBag.Prev = prevPage;
             ViewBag.Next = nextPage;
             ViewBag.HasPrevious = prevPage >= 0;

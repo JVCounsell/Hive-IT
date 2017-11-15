@@ -5,7 +5,7 @@
  @model Hive_IT.Data.ApplicationRole
 
 <fieldset class="role">
-    <h1>Create a role</h1>
+    <h1 class="text-center">Create a role</h1>
     <br />
 
     <form role="form" asp-action="Create">
@@ -19,9 +19,13 @@
             <span asp-validation-for="Name" class="field-validation=error"></span>
         </div>
 
-        <div>
+        <div class="clearfix">
             <label>&nbsp;</label>
-            <button type="submit" class="btn btn-primary" > Create a Role!</button>
+            <button type="submit" class="btn btn-primary pull-left" > Create a Role!</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
         </div>
 
     </form>
