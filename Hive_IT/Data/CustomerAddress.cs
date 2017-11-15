@@ -22,6 +22,8 @@ namespace Hive_IT.Data
         public string Country { get; set; }
                 
         [MinLength(5), MaxLength(6)]
+        [RegularExpression(@"[0-9]{5}|[a-zA-Z][0-9][a-zA-Z][0-9][a-zA-Z][0-9]", 
+            ErrorMessage = "Format is 5 digits or letter, digit, letter, digit, letter, digit.")]
         [Display(Name = "Postal/Zip Code")]
         public string Postal { get; set; }
 

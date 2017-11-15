@@ -52,7 +52,7 @@ namespace Hive_IT.Controllers
         public async Task<IActionResult> Create(ApplicationRole applicationRole)
         {
             var roleName = applicationRole.Name;
-            if (string.IsNullOrWhiteSpace(roleName))
+            if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Role must be named");
                 return View(applicationRole);
