@@ -135,6 +135,10 @@ thead {
     color: white;
 }
 
+.home-buttons li a {
+    margin-bottom: 20px;
+}
+
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {

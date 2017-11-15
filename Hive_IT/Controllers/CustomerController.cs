@@ -77,6 +77,9 @@ namespace Hive_IT.Controllers
                 listedCustomers.Add(listCustomer);
             }
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(listedCustomers);
+
             return View(listedCustomers);
         }
 

@@ -9,44 +9,47 @@
         <span class="glyphicon glyphicon-arrow-left"></span> Return To List
     </a>
 </div>
-<div class="panel panel-info text-center">
-    <div class=" panel-heading">
-        <h2>@Model.Given @Model.Surname</h2>
+
+<div class="customer-profile">
+    <div class="panel panel-info text-center">
+        <div class=" panel-heading">
+            <h2>@Model.Given @Model.Surname</h2>
+        </div>
+        <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
     </div>
-    <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
+    <br />
+
+    @{
+        if (Model.Phones.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var phone in Model.Phones)
+                {
+                    @Html.Partial("_ViewPhone", phone)
+                }
+            </div>
+        }
+
+        if (Model.Emails.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var email in Model.Emails)
+                {
+                    @Html.Partial("_ViewEmail", email)
+                }
+            </div>
+        }
+
+        if (Model.Addresses.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var address in Model.Addresses)
+                {
+                    @Html.Partial("_ViewAddress", address)
+                }
+
+                @Html.Partial("_AddAddress", Model.AlterAddress)
+            </div>
+        }
+    }
 </div>
-<br />
-
-@{
-    if (Model.Phones.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var phone in Model.Phones)
-            {
-                @Html.Partial("_ViewPhone", phone)
-            }
-        </div>
-    }
-
-    if (Model.Emails.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var email in Model.Emails)
-            {
-                @Html.Partial("_ViewEmail", email)
-            }
-        </div>
-    }
-
-    if (Model.Addresses.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var address in Model.Addresses)
-            {
-                @Html.Partial("_ViewAddress", address)
-            }
-
-            @Html.Partial("_AddAddress", Model.AlterAddress)
-        </div>
-    }
-}

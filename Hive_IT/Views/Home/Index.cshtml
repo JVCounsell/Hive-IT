@@ -6,15 +6,30 @@
     <br /><br />
 
     <p class="description">
-            Hive IT is designed with management of users in mind. As long as one is logged 
-        into the system it can be used. Actions differ between users based off of their role 
-        (difference between admins and other roles only currently). 
-    </p>
-    <p class="description">
-            Navigation of the site is easy. The navigation bar above can be found on every page. 
-        On it you can find links to a number of pages. There is a link to the project name and a home button; 
-        both of which link here. There's a link (Users) to be shown all the current users in the database. There
-        is a button (roles) which similarily shows all the roles that can be assigned that exist. Finally the last
-        buttons allow whichever user is assigned to change their password and to logout.
-    </p>
+           Welcome to the home page. To get started either click the navigation links above
+        or click one of the links below.
+    </p><br />
+
+<ul class="home-buttons text-center" style="list-style: none">
+    <li>
+        <a class="btn btn-primary" href="@Url.Action("List", "Customer")">
+            This takes you to the list of customers to manage
+        </a>
+    </li>
+   
+    <li>
+        <a class="btn btn-primary" href="@Url.Action("List", "Account")">
+            This takes you to the list of current users
+        </a>
+    </li>
+
+    <li>
+        <a class="btn btn-primary" href="@Url.Action("", "Roles")">
+            This takes you to the list of roles
+        </a>
+    </li>
+
+</ul>
+    
+    
 

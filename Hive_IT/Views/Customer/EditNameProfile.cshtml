@@ -9,70 +9,74 @@
     <a class="btn btn-primary pull-left" asp-action="List">
         <span class="glyphicon glyphicon-arrow-left"></span> Return To List
     </a>
-    <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CusId">
+    <a class="edit-name-cancel btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CusId">
         <span class="glyphicon glyphicon-stop"></span> Cancel Edit
     </a>
 </div>
-<div class="panel panel-info text-center"> 
-    <div class="panel-heading">
-        <fieldset>
-            <form role="form" asp-action="EditNameProfile">
-                @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="All" class="input-validation-error"></div>
+<div class="customer-profile">
+    <div class="panel panel-info text-center">
+        <div class="panel-heading">
+            <fieldset>
+                <form role="form" asp-action="EditNameProfile">
+                    @Html.AntiForgeryToken()
 
-                <div class="form-group col-sm-6">
-                    <label asp-for="Given" style="font-size: 2em"></label>
-                    <input type="text" asp-for="Given" class="form-control text-center" style="font-size: 2em" />
-                    <span asp-validation-for="Given" class="field-validation-error"></span>
-                </div>
+                    <div asp-validation-summary="All" class="input-validation-error"></div>
 
-                <div class="form-group col-sm-6">
-                    <label asp-for="Surname" style="font-size: 2em"></label>
-                    <input type="text" asp-for="Surname" class="form-control text-center" style="font-size: 2em"/>
-                    <span asp-validation-for="Surname" class="field-validation-error"></span>
-                </div>
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Given" style="font-size: 2em"></label>
+                        <input type="text" asp-for="Given" class="form-control text-center" style="font-size: 2em" />
+                        <span asp-validation-for="Given" class="field-validation-error"></span>
+                    </div>
 
-                <div>
-                    <label>&nbsp;</label>
-                    <button type="submit" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"> Edit Name</span>
-                    </button>
-                </div>
-            </form>
-        </fieldset>
+                    <div class="form-group col-sm-6">
+                        <label asp-for="Surname" style="font-size: 2em"></label>
+                        <input type="text" asp-for="Surname" class="form-control text-center" style="font-size: 2em" />
+                        <span asp-validation-for="Surname" class="field-validation-error"></span>
+                    </div>
+
+                    <div>
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"> Edit Name</span>
+                        </button>
+                    </div>
+                </form>
+            </fieldset>
+        </div>
+        <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
     </div>
-    <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
+
+    @{
+        if (Model.Phones.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var phone in Model.Phones)
+                {
+                    @Html.Partial("_ViewPhone", phone)
+                }
+            </div>
+        }
+
+        if (Model.Emails.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var email in Model.Emails)
+                {
+                    @Html.Partial("_ViewEmail", email)
+                }
+            </div>
+        }
+
+        if (Model.Addresses.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var address in Model.Addresses)
+                {
+                    @Html.Partial("_ViewAddress", address)
+                }
+            </div>
+        }
+    }
+
 </div>
-
-@{
-    if (Model.Phones.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var phone in Model.Phones)
-            {
-                @Html.Partial("_ViewPhone", phone)
-            }           
-        </div>
-    }
-
-    if (Model.Emails.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var email in Model.Emails)
-            {
-               @Html.Partial("_ViewEmail", email)
-            }            
-        </div>
-    }
-
-    if (Model.Addresses.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var address in Model.Addresses)
-            {
-                @Html.Partial("_ViewAddress", address)
-            }           
-        </div>
-    }
-}

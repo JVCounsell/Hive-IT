@@ -9,54 +9,57 @@
         <span class="glyphicon glyphicon-arrow-left"></span> Return To List
     </a>
 </div>
-<div class="panel panel-info text-center">
-    <div class=" panel-heading">
-        <h2>@Model.Given @Model.Surname</h2>
+
+<div class="customer-profile">
+    <div class="panel panel-info text-center">
+        <div class=" panel-heading">
+            <h2>@Model.Given @Model.Surname</h2>
+        </div>
+        <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
     </div>
-    <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
+
+    @{
+        if (Model.Phones.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var phone in Model.Phones)
+                {
+
+                    @Html.Partial("_ViewPhone", phone)
+                }
+            </div>
+        }
+
+        if (Model.Emails.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var email in Model.Emails)
+                {
+                    @Html.Partial("_ViewEmail", email)
+                }
+            </div>
+        }
+
+        <div class="clearfix">
+            <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CusId">
+                <span class="glyphicon glyphicon-stop"></span> Cancel Edit
+            </a>
+        </div>
+        if (Model.Addresses.Any())
+        {
+            <div class="panel-group text-center">
+                @foreach (var address in Model.Addresses)
+                {
+                    if (address.AddressId == Model.AlterAddress.AddressId)
+                    {
+                        @Html.Partial("_EditAddress", Model.AlterAddress)
+                    }
+                    else
+                    {
+                        @Html.Partial("_ViewAddress", address)
+                    }
+                }
+            </div>
+        }
+    }    
 </div>
-
-@{
-    if (Model.Phones.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var phone in Model.Phones)
-            {
-
-                @Html.Partial("_ViewPhone", phone)
-            }
-        </div>
-    }
-
-    if (Model.Emails.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var email in Model.Emails)
-            {               
-                @Html.Partial("_ViewEmail", email)   
-            }
-        </div>
-    }
-
-    <div class="clearfix">
-        <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CusId">
-            <span class="glyphicon glyphicon-stop"></span> Cancel Edit
-        </a>
-    </div>
-    if (Model.Addresses.Any())
-    {
-        <div class="panel-group text-center">
-            @foreach (var address in Model.Addresses)
-            {
-                if (address.AddressId == Model.AlterAddress.AddressId)
-                {
-                    @Html.Partial("_EditAddress", Model.AlterAddress)
-                }
-                else
-                {
-                    @Html.Partial("_ViewAddress", address)
-                }
-            }
-        </div>
-    }
-}    

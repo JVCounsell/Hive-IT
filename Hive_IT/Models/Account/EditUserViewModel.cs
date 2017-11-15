@@ -37,6 +37,9 @@ namespace Hive_IT.Data
         [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
 
+        [Required]
+        public string PreviousUsername { get; set; }
+
         public List<SelectListItem> RolesList { get; set; }
     }
 }

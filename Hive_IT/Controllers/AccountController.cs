@@ -34,7 +34,7 @@ namespace Hive_IT.Controllers
         {            
             if (_signInManager.IsSignedIn(User))
             {
-                return RedirectToAction("profile", "account", new {id = User.Identity.Name });
+                return RedirectToAction("profile", "account", new {username = User.Identity.Name });
             }
 
             //make sure it is a fresh login process
@@ -73,7 +73,7 @@ namespace Hive_IT.Controllers
                 return View();
             }            
 
-            return RedirectToAction("profile", "account", new { id = login.UserName });
+            return RedirectToAction("profile", "account", new { username = login.UserName });
         }
 
         [HttpPost]
@@ -195,7 +195,7 @@ namespace Hive_IT.Controllers
                 return View(registration);
             }
 
-            return RedirectToAction("profile", "account", new { id = registration.UserName });
+            return RedirectToAction("profile", "account", new { username = registration.UserName });
         }
          
         [HttpGet]
@@ -259,20 +259,22 @@ namespace Hive_IT.Controllers
                 selectedListUsers.Add(newListUser);
             }
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(selectedListUsers);
+
             return View(selectedListUsers);
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Profile(string id)
+        public async Task<IActionResult> Profile(string username)
         {
-            var userName = id;
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(username))
             {                
                 return RedirectToAction("list", "account");
             }
 
-            var currentUser =  await _userManager.FindByNameAsync(userName);
+            var currentUser =  await _userManager.FindByNameAsync(username);
 
             if(currentUser == null)
             {
@@ -305,15 +307,14 @@ namespace Hive_IT.Controllers
 
         [HttpPost]
         [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string username)
         {
-            var userName = id;
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(username))
             {                
                 return RedirectToAction("list", "account");
             }
 
-            var currentUser = await _userManager.FindByNameAsync(userName);
+            var currentUser = await _userManager.FindByNameAsync(username);
 
             if (currentUser == null)
             {
@@ -349,24 +350,23 @@ namespace Hive_IT.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string username)
         {
-            var userName = id;
             if (!User.IsInRole("Admin"))
             {
-                if (User.Identity.Name != userName)
+                if (User.Identity.Name != username)
                 {
                     return RedirectToAction("list", "account");
                 }
             }
 
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("list", "account");
             }
 
             // disable allowance of defaultuser to be edited as should be deleted once new admin created
-            if (userName.ToLower() == "defaultuser")
+            if (username.ToLower() == "defaultuser")
             {
                 return RedirectToAction("list", "account");
             }
@@ -382,7 +382,7 @@ namespace Hive_IT.Controllers
                 listOfRoles.Add(roleItem);
             }
 
-            var specifiedUser = await _userManager.FindByNameAsync(userName);
+            var specifiedUser = await _userManager.FindByNameAsync(username);
 
             if (specifiedUser == null)
             {
@@ -399,6 +399,7 @@ namespace Hive_IT.Controllers
                 UserName = specifiedUser.UserName,
                 EmailAddress = specifiedUser.Email,
                 PhoneNumber = specifiedUser.PhoneNumber,
+                PreviousUsername = specifiedUser.UserName,
 
                 //since each user should only have one role just grab the first (only) of list
                 Role = rolesUserIsIn.First(),
@@ -416,26 +417,34 @@ namespace Hive_IT.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, EditUserViewModel edit)
+        public async Task<IActionResult> Edit(string previousUsername, EditUserViewModel edit)
         {
-            var userName = id;
+            var username = previousUsername;
             if (!User.IsInRole("Admin"))
             {
-                if (User.Identity.Name != userName)
+                if (User.Identity.Name != username)
                 {
                     return RedirectToAction("list", "account");
                 }
             }
             ViewBag.Count = (await _userManager.GetUsersInRoleAsync("Admin")).Count();
 
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("list", "account");
             }
 
             // disable allowance of defaultuser to be edited as should be deleted once new admin created
-            if (userName.ToLower() == "defaultuser")
+            if (username.ToLower() == "defaultuser")
             {
+                return RedirectToAction("list", "account");
+            }
+                        
+            var specifiedUser = await _userManager.FindByNameAsync(username);
+
+            if (specifiedUser == null)
+            {
+                ModelState.AddModelError("", "Specified user was not found");
                 return RedirectToAction("list", "account");
             }
 
@@ -450,17 +459,12 @@ namespace Hive_IT.Controllers
                 listOfRoles.Add(roleItem);
             }
 
-            var specifiedUser = await _userManager.FindByNameAsync(userName);
-
-            if (specifiedUser == null)
-            {
-                ModelState.AddModelError("", "Specified user was not found");
-                return RedirectToAction("list", "account");
-            }
-            var rolesUserIsIn = await _userManager.GetRolesAsync(specifiedUser);
-
-            //populate list before sending model back
+            //reassignment for model to have list even if something fails
             edit.RolesList = listOfRoles;
+
+            // grab this to set previous role later
+            var rolesUserIsIn = await _userManager.GetRolesAsync(specifiedUser);
+            
 
             if (!ModelState.IsValid)
             {
@@ -497,9 +501,9 @@ namespace Hive_IT.Controllers
             specifiedUser.Email = edit.EmailAddress;
             specifiedUser.PhoneNumber = edit.PhoneNumber;
 
-            var prevRole = rolesUserIsIn.First();
 
             //get should prevent this but just for double security so always have an admin
+            var prevRole = rolesUserIsIn.First();
             if (prevRole == "Admin" && ViewBag.Count < 2)
             {
                 ModelState.AddModelError("", "Cannot change from admin if there is only one currently!");
@@ -517,8 +521,7 @@ namespace Hive_IT.Controllers
 
                 return View(edit);
             }
-
-
+            
             // finds a role based off of its name
             IdentityRole Role = await _roleManager.FindByNameAsync(edit.Role);
 
@@ -554,7 +557,7 @@ namespace Hive_IT.Controllers
                 return View(edit);
             }
 
-            return RedirectToAction("profile", "account", new { id = edit.UserName });
+            return RedirectToAction("profile", "account", new { username = edit.UserName });
             
         }
 
@@ -562,7 +565,7 @@ namespace Hive_IT.Controllers
         [Authorize]
         public IActionResult ChangePassword()
         {
-            //dont need string id as it only works for current user
+            //dont need id as it only works for current user
             return View();
         }
 
@@ -592,9 +595,8 @@ namespace Hive_IT.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ResetPassword(string id)
+        public async Task<IActionResult> ResetPassword(string username)
         {
-            var username = id;
             ViewBag.Name = username;
 
             if (string.IsNullOrEmpty(username))
@@ -610,16 +612,15 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("list", "account");
             }
 
-            return View();
+            var resetModel = new ResetPasswordViewModel {Username = username};
+
+            return View(resetModel);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ResetPassword(string id, ResetPasswordViewModel reset)
-        {
-            var username = id;
-            ViewBag.Name = username;
-
+        public async Task<IActionResult> ResetPassword(string username, ResetPasswordViewModel reset)
+        {            
             if (string.IsNullOrEmpty(username))
             {
                 RedirectToAction("list", "account");
@@ -635,7 +636,7 @@ namespace Hive_IT.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(reset);
             }
 
             var resetToken = await _userManager.GeneratePasswordResetTokenAsync(requestedUser);
@@ -644,10 +645,10 @@ namespace Hive_IT.Controllers
             if (!resetResult.Succeeded)
             {
                 ModelState.AddModelError("", "Password Reset Failed");
-                return View();
+                return View(reset);
             }
 
-            return RedirectToAction("profile", "account", new {id = username });
+            return RedirectToAction("profile", "account", new {username = username });
         }
 
         public IActionResult AccessDenied()

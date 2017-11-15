@@ -16,5 +16,8 @@ namespace Hive_IT.Models.Account
         [Compare("NewTemporaryPassword", ErrorMessage = "Passwords must match!")]
         [Display(Name ="Confirm Temporary Password")]
         public string ConfirmTemporaryPassword { get; set; }
+
+        [Required]
+        public string Username { get; set; }
     }
 }

@@ -10,134 +10,136 @@
         <span class="glyphicon glyphicon-arrow-left"></span> Return To List
     </a>
 </div>
- <div class="panel panel-info text-center">
-     <div class=" panel-heading">
-         <h2>@Model.Given @Model.Surname</h2>
-         <a href="@Url.Action("editnameprofile", "customer", new {id = Model.CusId })" class="btn btn-primary">
-             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit Name
-         </a>     
-     </div>
-     <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
- </div>
-
-@{
-    if (Model.Phones.Any())
-    {
-        <div class="panel-group text-center clearfix">
-            @foreach (var phone in Model.Phones)
-            {
-                <div class="panel panel-default">
-                    <div class="panel-heading clearfix">
-                        Phonenumber: @phone.PhoneNumber
-                        <div class="btn-group clearfix pull-right">
-                            <a href="@Url.Action("editphone", "customer", new {id= Model.CusId, ph = phone.PhoneId})" class="btn btn-info">
-                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
-                            </a>
-                            @using (Html.BeginForm("deletephone", "customer", new { id = Model.CusId, ph = phone.PhoneId }))
-                            {
-                                <button type="submit" class="btn btn-danger clearfix pull-right" formnovalidate value="DELETE"
-                                        onclick="return confirm('Delete this phone number?')">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
-                                </button>
-                            }                           
-                        </div>
-                    </div>
-                </div>
-            }
-            <a href="@Url.Action("addphone", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a phonenumber
-            </a>
-        </div>       
-
-        
-    }
-
-    if (Model.Emails.Any())
-    {
-        <div class="panel-group text-center clearfix">
-            @foreach (var email in Model.Emails)
-            {
-                <div class="panel panel-primary">
-                    <div class="panel-heading clearfix">
-                        Email: @email.Email
-                        <div class="btn-group pull-right">
-                            <a href="@Url.Action("editemail", "customer", new {id = Model.CusId, em = email.Email })" class="btn btn-info">
-                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
-                            </a>
-                            @using (Html.BeginForm("deleteemail", "customer", new { id = Model.CusId, em = email.Email}))
-                            {
-                                <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
-                                        onclick="return confirm('Delete this email?')">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
-                                </button>
-                            }          
-                        </div>
-                    </div>
-                </div>
-            }
-            <a href="@Url.Action("addemail", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a Email Address
+<div class="customer-profile">
+    <div class="panel panel-info text-center">
+        <div class=" panel-heading">
+            <h2>@Model.Given @Model.Surname</h2>
+            <a href="@Url.Action("editnameprofile", "customer", new {id = Model.CusId })" class="btn btn-primary">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit Name
             </a>
         </div>
+        <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
+    </div>
 
-
-    }
-
-    if (Model.Addresses.Any())
-    {
-        <div class="panel-group text-center clearfix">
-            @foreach (var address in Model.Addresses)
-            {
-                <div class="panel panel-info">
-                    <div class="panel-heading clearfix">
-                        @if (address.StreetAddress != null)
-                        {
-                            <b>St: </b>@address.StreetAddress
-                        }
-
-                        @if (address.City != null)
-                        {
-                            <b>City: </b>@address.City
-                        }
-
-                        @if (address.ProvState != null)
-                        {
-                            <b>Pr/St: </b>@address.ProvState
-                        }
-
-                        @if (address.Country != null)
-                        {
-                            <b>Country: </b>@address.Country
-                        }
-
-                        @if (address.Postal != null)
-                        {
-                            <b>Postal/Zip: </b>@address.Postal
-                        }
-                        <div class="btn-group pull-right">
-                            <a href="@Url.Action("editaddress", "customer", new {id = Model.CusId, ml = address.AddressId })" class="btn btn-info">
-                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
-                            </a>
-                            @using (Html.BeginForm("deleteaddress", "customer", new { id = Model.CusId, ml = address.AddressId }))
-                            {
-                                <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
-                                        onclick="return confirm('Delete this address?')">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
-                                </button>
-                            }          
+    @{
+        if (Model.Phones.Any())
+        {
+            <div class="panel-group text-center clearfix">
+                @foreach (var phone in Model.Phones)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix">
+                            Phonenumber: @phone.PhoneNumber
+                            <div class="btn-group clearfix pull-right">
+                                <a href="@Url.Action("editphone", "customer", new {id= Model.CusId, ph = phone.PhoneId})" class="btn btn-info">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                                </a>
+                                @using (Html.BeginForm("deletephone", "customer", new { id = Model.CusId, ph = phone.PhoneId }))
+                                {
+                                    <button type="submit" class="btn btn-danger clearfix pull-right" formnovalidate value="DELETE"
+                                            onclick="return confirm('Delete this phone number?')">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                                    </button>
+                                }
+                            </div>
                         </div>
                     </div>
+                }
+                <a href="@Url.Action("addphone", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a phonenumber
+                </a>
+            </div>
 
-                </div>
-            }
-            <a href="@Url.Action("addaddress", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add mailing information
-            </a>
-        </div>
+
+        }
+
+        if (Model.Emails.Any())
+        {
+            <div class="panel-group text-center clearfix">
+                @foreach (var email in Model.Emails)
+                {
+                    <div class="panel panel-primary">
+                        <div class="panel-heading clearfix">
+                            Email: @email.Email
+                            <div class="btn-group pull-right">
+                                <a href="@Url.Action("editemail", "customer", new {id = Model.CusId, em = email.Email })" class="btn btn-info">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                                </a>
+                                @using (Html.BeginForm("deleteemail", "customer", new { id = Model.CusId, em = email.Email }))
+                                {
+                                    <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
+                                            onclick="return confirm('Delete this email?')">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <a href="@Url.Action("addemail", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a Email Address
+                </a>
+            </div>
+
+
+        }
+
+        if (Model.Addresses.Any())
+        {
+            <div class="panel-group text-center clearfix">
+                @foreach (var address in Model.Addresses)
+                {
+                    <div class="panel panel-info">
+                        <div class="panel-heading clearfix">
+                            @if (address.StreetAddress != null)
+                            {
+                                <b>St: </b>@address.StreetAddress
+                            }
+
+                            @if (address.City != null)
+                            {
+                                <b>City: </b>@address.City
+                            }
+
+                            @if (address.ProvState != null)
+                            {
+                                <b>Pr/St: </b>@address.ProvState
+                            }
+
+                            @if (address.Country != null)
+                            {
+                                <b>Country: </b>@address.Country
+                            }
+
+                            @if (address.Postal != null)
+                            {
+                                <b>Postal/Zip: </b>@address.Postal
+                            }
+                            <div class="btn-group pull-right">
+                                <a href="@Url.Action("editaddress", "customer", new {id = Model.CusId, ml = address.AddressId })" class="btn btn-info">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                                </a>
+                                @using (Html.BeginForm("deleteaddress", "customer", new { id = Model.CusId, ml = address.AddressId }))
+                                {
+                                    <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
+                                            onclick="return confirm('Delete this address?')">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                }
+                <a href="@Url.Action("addaddress", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add mailing information
+                </a>
+            </div>
+        }
     }
-}
-<div>
-    <br /><br />
+    <div>
+        <br /><br />
+    </div>
 </div>
 
 @if (User.IsInRole("Admin"))
