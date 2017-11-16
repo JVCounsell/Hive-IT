@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 }
-                <a href="@Url.Action("addphone", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                <a href="@Url.Action("addphone", "customer", new {id = Model.CusId })" class="btn btn-success col-xs-12">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a phonenumber
                 </a>
             </div>
@@ -54,7 +54,7 @@
         else
         {
             <div class="panel-group text-center clearfix">
-                <a href="@Url.Action("addphone", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                <a href="@Url.Action("addphone", "customer", new {id = Model.CusId })" class="btn btn-success col-xs-12">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a phonenumber
                 </a>
             </div>
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 }
-                <a href="@Url.Action("addemail", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                <a href="@Url.Action("addemail", "customer", new {id = Model.CusId })" class="btn btn-success col-xs-12">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a Email Address
                 </a>
             </div>
@@ -94,7 +94,7 @@
         else
         {
             <div class="panel-group text-center clearfix">
-                <a href="@Url.Action("addemail", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                <a href="@Url.Action("addemail", "customer", new {id = Model.CusId })" class="btn btn-success col-xs-12">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a Email Address
                 </a>
             </div>
@@ -149,7 +149,7 @@
 
                     </div>
                 }
-                <a href="@Url.Action("addaddress", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                <a href="@Url.Action("addaddress", "customer", new {id = Model.CusId })" class="btn btn-success col-xs-12">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add mailing information
                 </a>
             </div>
@@ -157,7 +157,7 @@
         else
         {
             <div class="panel-group text-center clearfix">
-                <a href="@Url.Action("addaddress", "customer", new {id = Model.CusId })" class="btn btn-success col-sm-12">
+                <a href="@Url.Action("addaddress", "customer", new {id = Model.CusId })" class="btn btn-success col-xs-12">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add mailing information
                 </a>
             </div>
@@ -174,7 +174,7 @@
     <div class="clearfix text-center">
         @using (Html.BeginForm("delete", "customer", new { id = Model.CusId }))
         {
-            <button type="submit" class="btn btn-danger col-sm-12" formnovalidate value="DELETE"
+            <button type="submit" class="btn btn-danger col-xs-12" formnovalidate value="DELETE"
                     onclick="return confirm('Delete this customer?')">
                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer
             </button>

@@ -22,10 +22,10 @@ namespace Hive_IT.Controllers
         }
                 
         [HttpGet]
-        public IActionResult List(int page = 0, int sorting = 0)
+        public IActionResult List(int page = 0, int sorting = 0, int num = 10)
         {
             var totalCustomers = _db.Customers.Count();
-            var customersPerPage = 14;
+            var customersPerPage = num;
             var totalpages = (int)Math.Ceiling(Convert.ToDouble(totalCustomers) / Convert.ToDouble(customersPerPage));
             var nextPage = page + 1;
             var previousPage = page - 1;
@@ -41,6 +41,7 @@ namespace Hive_IT.Controllers
             }
 
             ViewBag.Sorting = sorting;
+            ViewBag.Num = num;
 
             var customers = new List<Customer>();
             if (sorting == 0)

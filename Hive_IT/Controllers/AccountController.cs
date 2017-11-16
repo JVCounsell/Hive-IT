@@ -200,10 +200,10 @@ namespace Hive_IT.Controllers
          
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> List(int page = 0, int sorting=0)
+        public async Task<IActionResult> List(int page = 0, int sorting=0, int num = 10)
         {
             //page setup group
-            var usersPerPage = 14; //TODO: show n many buttons?
+            var usersPerPage = num;
             var totalUsers = _userManager.Users.Count();
             var totalPages = (int)Math.Ceiling(Convert.ToDouble(totalUsers)  / Convert.ToDouble(usersPerPage));
             var nextPage = page + 1; // probably slightly better to have these calculated just here ...
@@ -236,6 +236,7 @@ namespace Hive_IT.Controllers
 
             //easy to just get sorting as viewbag
             ViewBag.Sorting = sorting;
+            ViewBag.Num = num;
 
              var usersSelection = users.Skip(usersPerPage * page).Take(usersPerPage).ToArray();
 

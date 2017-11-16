@@ -20,30 +20,53 @@
     </ul>   
 </div>
 <div class="sorting-buttons">
-    <p><b>Sort By: </b></p>
+    <div class="clearfix pull-left">
+        <p><b>Sort by: </b></p>
+        @{
+            var name = new string[] { "Given Name", "Surname" };
 
-    @{ 
-        var names = new string[] { "Given Name", "Surname" };
+            for (int i = 0; i < 2; i++)
+            {
+                if (ViewBag.Sorting == i)
+                {
+                    <a class="btn btn-primary" style="border: 2px solid #031cbc"
+                       href="@Url.Action("list", "customer", new { page = 0, sorting = i, num = ViewBag.Num})">@name[i]</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" href="@Url.Action("list", "customer", new { page = 0, sorting = i, num = ViewBag.Num})">@name[i]</a>
+                }
 
-         for (int i = 0; i < 2; i++)
-         {
-            if (i == ViewBag.Sorting)
-            {
-                <a class="btn btn-primary" style="border: 2px solid #031cbc"
-                   href="@Url.Action("List", "Customer", new {page = 0, sorting = i})">@names[i]</a>
-            }
-            else
-            {
-                <a class="btn btn-primary" href="@Url.Action("List", "Customer", new {page = 0, sorting = i})">@names[i]</a>
             }
         }
-    }
+    </div>
 
-</div><br />
+    <div class="clearfix pull-right">
+        <p><b>Show how many per page?</b></p>
 
-<table class="table text-center table-bordered col-sm-12">
-    <thead>
-        <tr >
+        @{
+            for (int n = 5; n <= 15; n = n + 5)
+            {
+                if (ViewBag.Num == n)
+                {
+                    <a class="btn btn-default" style="border: 2px solid #808080"
+                       href="@Url.Action("list", "customer", new { page = 0, sorting = ViewBag.Sorting, num = n})">@n</a>
+                }
+                else
+                {
+                    <a class="btn btn-default" href="@Url.Action("list", "customer", new { page = 0, sorting = ViewBag.Sorting, num = n})">@n</a>
+                }
+            }
+        }
+    </div>
+
+</div>
+<div><br /></div>
+
+<div class="clearfix">
+    <table class="table text-center table-bordered col-xs-12">
+        <thead>
+            <tr>
                 <th class="text-center"> Given Name </th>
                 <th class="text-center"><a></a> Surname </th>
                 <th class="text-center"> Date Created </th>
@@ -53,47 +76,50 @@
                 {
                     <th class="text-center"> Action</th>
                 }
-                
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model) {
-        <tr>
-            <td>
-                <a href="@Url.Action("Profile", "Customer", new {id = item.ItemID})"> @item.GivenName</a>
-            </td>
-            <td>
-                <a href="@Url.Action("Profile", "Customer", new {id = item.ItemID})"> @item.Surname</a> 
-            </td>
-            <td>
-                @item.Created
-            </td>
-            <td>
-                @item.FirstEmail
-            </td>
-            <td>
-                @item.FirstPhone
-            </td>            
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        @using (Html.BeginForm("Delete", "Customer", new { id = item.ItemID }))
-                        {
-                        <button type="submit" formnovalidate value="DELETE" class="btn btn-danger"
-                                onclick="return confirm('Are you sure you want to delete this Customer?')">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer
-                        </button>
-                        }
-                    </td>                   
-                }             
-        </tr>
-    }
-    </tbody>
-</table>
 
-<div class="col-sm-12">
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("Profile", "Customer", new {id = item.ItemID})"> @item.GivenName</a>
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Profile", "Customer", new {id = item.ItemID})"> @item.Surname</a>
+                    </td>
+                    <td>
+                        @item.Created
+                    </td>
+                    <td>
+                        @item.FirstEmail
+                    </td>
+                    <td>
+                        @item.FirstPhone
+                    </td>
+                    @if (User.IsInRole("Admin"))
+                {
+                        <td>
+                            @using (Html.BeginForm("Delete", "Customer", new { id = item.ItemID }))
+                            {
+                                <button type="submit" formnovalidate value="DELETE" class="btn btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this Customer?')">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer
+                                </button>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+</div>
+
+<div class="col-xs-12">
    <br />
 </div>
-<a class="btn btn-success" asp-action="Create">
+<a class="btn btn-success bottom-left" asp-action="Create">
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Customer
 </a>
