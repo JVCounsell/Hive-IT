@@ -8,6 +8,7 @@ body {
     padding-bottom: 20px;
 }
 
+
 /* Styling general look of website */
 
 .footer {
@@ -24,6 +25,7 @@ body {
 .footer-span{
     color: darkgray;
 }
+
 
 /* Styling base classes to look better*/
 .pager .next a{
@@ -80,7 +82,9 @@ thead {
    border-bottom-left-radius: 0;
    border-top-left-radius: 0;
 }
-
+.panel-primary .panel-heading .btn-primary {
+    border-color: white;
+}
 
 
 /* Custom Class styling*/
@@ -137,6 +141,39 @@ thead {
 
 .home-buttons li a {
     margin-bottom: 20px;
+}
+
+.customer-heading-panel{
+    border: 1px solid black;
+}
+
+.customer-heading-panel .panel-heading{
+    background-color: #111111;
+    color: darkgray;
+    border-bottom: 1px solid transparent;
+}
+
+.customer-heading-panel .panel-footer{
+    background-color: lightgray;
+    border-top: 1px #ddd;
+}
+
+.panel-customer-phone {
+    border: 1px solid #069999;
+}
+
+.panel-customer-phone .panel-heading {
+    color: white;
+    background-color: #15a3a3;
+}
+
+.panel-customer-address {
+    border: 1px solid #bce8f1;
+}
+
+.panel-customer-address .panel-heading {
+    background-color: #bddded;
+    color: #31708f;
 }
 
 /* Wrapping element */

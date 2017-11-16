@@ -11,7 +11,7 @@
 </div>
 
 <div class="customer-profile">
-    <div class="panel panel-info text-center">
+    <div class="panel customer-heading-panel text-center">
         <div class=" panel-heading">
             <h2>@Model.Given @Model.Surname</h2>
         </div>
@@ -51,5 +51,15 @@
                 @Html.Partial("_AddAddress", Model.AlterAddress)
             </div>
         }
+        else
+        {
+            <div class="panel-group text-center">              
+                @Html.Partial("_AddAddress", Model.AlterAddress)
+            </div>
+
+        }
     }
+    <div>
+        <br /><br />
+    </div>
 </div>

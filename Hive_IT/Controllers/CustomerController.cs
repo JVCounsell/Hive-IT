@@ -105,6 +105,9 @@ namespace Hive_IT.Controllers
                 CusId = customerToFind.CustomerId
             };
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(profile);
+
             return View(profile);
         }
 
@@ -129,6 +132,9 @@ namespace Hive_IT.Controllers
                 Addresses = _db.MailingAddresses.Where(x => x.CustomerId == id).ToList(),
                 CusId= customerToFind.CustomerId
             };
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(profile);
 
             return View(profile);
         }
@@ -393,6 +399,9 @@ namespace Hive_IT.Controllers
                 }
             }
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(editModel);
+
             return View(editModel);
         }
 
@@ -465,6 +474,9 @@ namespace Hive_IT.Controllers
                     editModel.AlterPhone = requestedPhone;                   
                 }
             }
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(editModel);
 
             return View(editModel);
         }
@@ -539,6 +551,9 @@ namespace Hive_IT.Controllers
                 }
             }
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(editModel);
+
             return View(editModel);
         }
 
@@ -602,6 +617,9 @@ namespace Hive_IT.Controllers
             var adding = new AddEditEmailViewModel { AlterEmail = newEmail };
             adding = FillEditEmail(customer, adding);
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(adding);
+
             return View(adding);
         }
         
@@ -649,6 +667,9 @@ namespace Hive_IT.Controllers
             var adding = new AddEditPhoneViewModel { AlterPhone = newPhone};
             adding = FillEditPhone(customer, adding);
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(adding);
+
             return View(adding);
         }
 
@@ -693,6 +714,9 @@ namespace Hive_IT.Controllers
             var newAdd = new CustomerAddress { CustomerId = id };
             var adding = new AddEditAddressViewModel { AlterAddress = newAdd };
             adding = FillEditAddress(customer, adding);
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return PartialView(adding);
 
             return View(adding);
         }
