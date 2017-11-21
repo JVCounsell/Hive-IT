@@ -21,5 +21,6 @@ namespace Hive_IT.Data
         public virtual ICollection<CustomerPhoneNumber> CustomerPhoneNumber { get; set; }
         public virtual ICollection<CustomerEmail> CustomerEmail { get; set; }
         public virtual ICollection<CustomerAddress> CustomerAddress { get; set; }
+        public virtual ICollection<WorkOrder> WorkOrder { get; set; }
     }
 }

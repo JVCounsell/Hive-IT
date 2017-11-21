@@ -98,6 +98,8 @@
                                     {
                                         using (Html.BeginForm("delete", "account", new { username = listedItem.Username }))
                                         {
+                                            @Html.AntiForgeryToken()
+
                                             <button type="submit" formnovalidate value="DELETE" class="btn btn-md btn-danger"
                                                     onclick="return confirm('Are you sure you want to delete this user?')">
                                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -111,6 +113,8 @@
                                 {
                                     using (Html.BeginForm("delete", "account", new { username = listedItem.Username }))
                                     {
+                                        @Html.AntiForgeryToken()
+
                                         <button type="submit" formnovalidate value="DELETE" class="btn btn-md btn-danger"
                                                 onclick="return confirm('Are you sure you want to delete this user?')">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>

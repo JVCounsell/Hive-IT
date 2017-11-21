@@ -308,6 +308,7 @@ namespace Hive_IT.Controllers
 
         [HttpPost]
         [Authorize(Roles ="Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -620,6 +621,7 @@ namespace Hive_IT.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(string username, ResetPasswordViewModel reset)
         {            
             if (string.IsNullOrEmpty(username))

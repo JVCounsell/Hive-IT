@@ -49,6 +49,7 @@ namespace Hive_IT.Controllers
 
         [HttpPost, Route("create")]
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ApplicationRole applicationRole)
         {
             var roleName = applicationRole.Name;
@@ -93,6 +94,7 @@ namespace Hive_IT.Controllers
                 
         [HttpPost, Route("delete/{roleName}")]
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string roleName)
         {
             if (string.IsNullOrWhiteSpace(roleName))

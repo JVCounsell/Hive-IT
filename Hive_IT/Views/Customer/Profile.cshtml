@@ -35,6 +35,8 @@
                                 </a>
                                 @using (Html.BeginForm("deletephone", "customer", new { id = Model.CusId, ph = phone.PhoneId }))
                                 {
+                                    @Html.AntiForgeryToken()
+
                                     <button type="submit" class="btn btn-danger clearfix pull-right" formnovalidate value="DELETE"
                                             onclick="return confirm('Delete this phone number?')">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
@@ -75,6 +77,8 @@
                                 </a>
                                 @using (Html.BeginForm("deleteemail", "customer", new { id = Model.CusId, em = email.Email }))
                                 {
+                                    @Html.AntiForgeryToken()
+
                                     <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
                                             onclick="return confirm('Delete this email?')">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
@@ -139,6 +143,8 @@
                                 </a>
                                 @using (Html.BeginForm("deleteaddress", "customer", new { id = Model.CusId, ml = address.AddressId }))
                                 {
+                                    @Html.AntiForgeryToken()
+
                                     <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
                                             onclick="return confirm('Delete this address?')">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
@@ -174,6 +180,8 @@
     <div class="clearfix text-center">
         @using (Html.BeginForm("delete", "customer", new { id = Model.CusId }))
         {
+            @Html.AntiForgeryToken()
+
             <button type="submit" class="btn btn-danger col-xs-12" formnovalidate value="DELETE"
                     onclick="return confirm('Delete this customer?')">
                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer

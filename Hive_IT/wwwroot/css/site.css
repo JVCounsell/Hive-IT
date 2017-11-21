@@ -90,10 +90,14 @@ thead {
 /* Custom Class styling*/
 .input-validation-error{
     color:red;
+    background-color: white;
+    border-radius: 5px;
 }
 
 .field-validation-error {
     color: red;
+    background-color: white;
+    border-radius: 5px;
 }
 
 .default-warning{

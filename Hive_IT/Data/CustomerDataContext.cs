@@ -12,6 +12,8 @@ namespace Hive_IT.Data
         public DbSet<CustomerPhoneNumber> PhoneNumbers { get; set; }
         public DbSet<CustomerEmail> Emails { get; set; }
         public DbSet<CustomerAddress> MailingAddresses { get; set; }
+        public DbSet<WorkOrder> WorkOrders { get; set; }
+        public DbSet<Device> Devices { get; set; }
 
         
         public CustomerDataContext(DbContextOptions<CustomerDataContext> options): base(options)

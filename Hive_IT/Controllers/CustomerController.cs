@@ -141,6 +141,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditNameProfile(long id, CustomerProfileViewModel edited)
         {
             //check to see if customer with specified id exists
@@ -178,6 +179,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(CreateCustomerViewModel added)
         {
             if (!ModelState.IsValid)
@@ -251,6 +253,7 @@ namespace Hive_IT.Controllers
                
         [HttpPost]
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(long id)
         {
             //make sure customer with id exists
@@ -298,6 +301,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteEmail(long id, string em = null)
         {
             //make sure customer with id exists
@@ -323,6 +327,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeletePhone(long id, long ph = 0)
         {
             //make sure customer with id exists
@@ -348,6 +353,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteAddress(long id, long ml = 0)
         {            
             //make sure customer with id exists
@@ -407,6 +413,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditEmail(long id, CustomerEmail editEmail,  string em = null)
         {
             //make sure customer with id exists
@@ -440,8 +447,22 @@ namespace Hive_IT.Controllers
 
                     if (!string.IsNullOrEmpty(edited.AlterEmail.Email))
                     {
-                        requestedEmail.Email = edited.AlterEmail.Email;
-                        _db.SaveChanges();
+                        var exists = _db.Emails.FirstOrDefault(e => e.Email == edited.AlterEmail.Email);
+                        if (exists == null)
+                        {
+                            requestedEmail.Email = edited.AlterEmail.Email;
+                            _db.SaveChanges();
+                        }
+                       else if (exists.Email == em)
+                        {
+                            requestedEmail.Email = edited.AlterEmail.Email;
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Email already exists");
+                            return View(sendBack);
+                        }
                     }
                 }
             }            
@@ -483,6 +504,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditPhone(long id, long ph, CustomerPhoneNumber editPhone)
         {
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
@@ -559,6 +581,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditAddress(long id, CustomerAddress editAdd, long ml)
         {
             var requested = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
@@ -625,6 +648,7 @@ namespace Hive_IT.Controllers
         }
         
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddEmail(long id, CustomerEmail addEmail)
         {
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
@@ -648,8 +672,17 @@ namespace Hive_IT.Controllers
 
             if (!string.IsNullOrWhiteSpace(additional.AlterEmail.Email))
             {
-                _db.Add(addEmail);
-                _db.SaveChanges();
+                var exists = _db.Emails.FirstOrDefault(e => e.Email == addEmail.Email);
+                if (exists == null)
+                {
+                    _db.Add(addEmail);
+                    _db.SaveChanges();
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Email already exists");
+                    return View(additional);
+                }
             }
 
             return RedirectToAction("profile", "customer", new {id = id });
@@ -675,6 +708,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddPhone(long id, CustomerPhoneNumber newPhone)
         {
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
@@ -723,6 +757,7 @@ namespace Hive_IT.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddAddress(long id, CustomerAddress newAdd)
         {
             var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == id);
