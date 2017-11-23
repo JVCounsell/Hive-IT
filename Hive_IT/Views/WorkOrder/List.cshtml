@@ -1,7 +1,99 @@
-﻿
+﻿@model List<Hive_IT.Models.WorkOrderListViewModel>
 @{
     ViewData["Title"] = "Work Orders";
 }
 
-<h2>Work Orders</h2>
+<h1>Work Orders</h1>
 
+<div>
+    <ul class="pager">
+        @if (ViewBag.HasPrevious)
+        {
+            <li class="previous btn">
+                <a href="@Url.Action("list", "workorder", new {page = ViewBag.Prev, sorting = ViewBag.Sorting })">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Previous Page
+                </a>
+            </li>
+        }
+        @if (ViewBag.HasNext)
+        {
+            <li class="next btn">
+                <a href="@Url.Action("list", "workorder", new {page = ViewBag.Next, sorting = ViewBag.Sorting })">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> Next Page
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+<div class="sorting-buttons">
+    <div class="clearfix pull-left">
+        <p><b>Sort by: </b></p>
+        @{
+            var name = new string[] { "Work Order Number", "Status", "Time Status Updated" };
+
+            for (int i = 0; i <= 2; i++)
+            {
+                if (ViewBag.Sorting == i)
+                {
+                    <a class="btn btn-primary" style="border: 2px solid #031cbc"
+                       href="@Url.Action("list", "workorder", new { page = 0, sorting = i, num = ViewBag.Num})">@name[i]</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" href="@Url.Action("list", "workorder", new { page = 0, sorting = i, num = ViewBag.Num})">@name[i]</a>
+                }
+
+            }
+        }
+    </div>
+
+    <div class="clearfix pull-right">
+        <p><b>Show how many per page?</b></p>
+
+        @{
+            for (int n = 5; n <= 15; n = n + 5)
+            {
+                if (ViewBag.Num == n)
+                {
+                    <a class="btn btn-default" style="border: 2px solid #808080"
+                       href="@Url.Action("list", "workorder", new { page = 0, sorting = ViewBag.Sorting, num = n})">@n</a>
+                }
+                else
+                {
+                    <a class="btn btn-default" href="@Url.Action("list", "workorder", new { page = 0, sorting = ViewBag.Sorting, num = n})">@n</a>
+                }
+            }
+        }
+    </div>
+
+</div>
+<div><br /></div>
+<div class="clearfix">
+    <table class="table text-center table-bordered col-xs-12">
+        <thead>
+            <tr>
+              <th class="text-center">Work Order Number</th>
+                <th class="text-center">Customer</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Status Updation Time</th>
+                <th class="text-center">Device Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+               <tr>
+                   <td><a asp-action="Details" asp-route-order="@item.OrderNumber">@item.OrderNumber</a></td>
+                   <td><a href="@Url.Action("Profile", "Customer", new {id= item.CustomerID })">@item.CustomerName</a></td>
+                   <td>@item.OrderStatus</td>
+                   <td>@item.StatusDate</td>
+                   <td>@item.DeviceCount</td>
+               </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+</div>
+<div class="col-xs-12">
+    <br />
+</div>

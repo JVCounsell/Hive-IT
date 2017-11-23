@@ -18,6 +18,7 @@ namespace Hive_IT.Data
         public string TimeCreated {get; set;}
         public string PaidAt { get; set; }
         public string CompletionAt { get; set; }
+        public string StatusLastUpdatedAt { get; set; }
 
         public virtual ICollection<Device> Device { get; set; }
 

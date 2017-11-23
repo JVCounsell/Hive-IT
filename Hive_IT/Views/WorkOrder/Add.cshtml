@@ -1,0 +1,71 @@
+﻿@model Hive_IT.Data.Device
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<fieldset>
+    <h1 class="text-center">Add New Device</h1>
+    <br />
+
+    <form role="form" asp-action="Add">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" value="Created" asp-for="Status" />
+
+        <div asp-validation-summary="All" class="input-validation-error"></div>
+
+        <div class="form-group col-xs-6">
+            <label asp-for="Manufacturer"></label>
+            <input type="text" asp-for="Manufacturer" class="form-control" />
+            <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group col-xs-6">
+            <label asp-for="Model"></label>
+            <input type="text" asp-for="Model" class="form-control" />
+            <span asp-validation-for="Model" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <input type="text" asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Provider"></label>
+            <input type="text" asp-for="Provider" class="form-control" />
+            <span asp-validation-for="Provider" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Serial"></label>
+            <input type="text" asp-for="Serial" class="form-control" />
+            <span asp-validation-for="Serial" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Problem"></label>
+            <textarea asp-for="Problem" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="Problem" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Notes"></label>
+            <textarea asp-for="Notes" class="form-control" rows="5"></textarea>
+        </div>
+
+        @Html.HiddenFor(model => model.WorkOrderNumber)
+        @Html.Hidden("order", Model.WorkOrderNumber)
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left"> Create</button>
+
+            <a class="btn btn-danger pull-right" href="@Url.Action("Details", "WorkOrder", new {order = Model.WorkOrderNumber })">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+</fieldset>
