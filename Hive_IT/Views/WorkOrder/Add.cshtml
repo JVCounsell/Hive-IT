@@ -1,4 +1,4 @@
-﻿@model Hive_IT.Data.Device
+﻿@model Hive_IT.Models.WorkOrders.AddDeviceViewModel
 
 @{
     ViewData["Title"] = "Add";
@@ -17,13 +17,13 @@
 
         <div class="form-group col-xs-6">
             <label asp-for="Manufacturer"></label>
-            <input type="text" asp-for="Manufacturer" class="form-control" />
+            <select asp-for="Manufacturer" asp-items="@Model.Manufacturers" class="form-control"></select>
             <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
         </div>
 
         <div class="form-group col-xs-6">
             <label asp-for="Model"></label>
-            <input type="text" asp-for="Model" class="form-control" />
+            <select asp-for="Model" asp-items="@Model.Models" class="form-control"></select>
             <span asp-validation-for="Model" class="field-validation-error"></span>
         </div>
 

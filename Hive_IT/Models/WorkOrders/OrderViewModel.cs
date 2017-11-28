@@ -20,5 +20,6 @@ namespace Hive_IT.Models.WorkOrders
         public List<CustomerEmail> Emails { get; set; }
         public List<CustomerPhoneNumber> Phones { get; set; }
         public List<Device> LinkedDevices { get; set; }
+        public List<CustomerAddress> ShippingAddresses { get; set; }
     }
 }

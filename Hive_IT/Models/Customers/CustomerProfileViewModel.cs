@@ -21,5 +21,7 @@ namespace Hive_IT.Models.Customers
         public List<CustomerPhoneNumber> Phones { get; set; }
         public List<CustomerEmail> Emails { get; set; }
         public List<CustomerAddress> Addresses { get; set; }
+
+        public List<WorkOrderListViewModel> WorkOrders { get; set; }
     }
 }

@@ -37,7 +37,7 @@
                                 {
                                     @Html.AntiForgeryToken()
 
-                                    <button type="submit" class="btn btn-danger clearfix pull-right" formnovalidate value="DELETE"
+                                    <button type="submit" class="btn btn-delete clearfix pull-right" formnovalidate value="DELETE"
                                             onclick="return confirm('Delete this phone number?')">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
                                     </button>
@@ -79,7 +79,7 @@
                                 {
                                     @Html.AntiForgeryToken()
 
-                                    <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
+                                    <button type="submit" class="btn btn-delete" formnovalidate value="DELETE"
                                             onclick="return confirm('Delete this email?')">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
                                     </button>
@@ -145,7 +145,7 @@
                                 {
                                     @Html.AntiForgeryToken()
 
-                                    <button type="submit" class="btn btn-danger" formnovalidate value="DELETE"
+                                    <button type="submit" class="btn btn-delete" formnovalidate value="DELETE"
                                             onclick="return confirm('Delete this address?')">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
                                     </button>
@@ -171,8 +171,43 @@
         }
     }
     <div>
-        <br /><br />
+        <br />
     </div>
+</div>
+
+<div class="clearfix text-center">
+    <label>Work Orders for this Customer</label>
+    <table class="table text-center table-bordered col-xs-12">
+        <thead>
+            <tr>
+                <th class="text-center">Work Order Number</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Status Updation Time</th>
+                <th class="text-center">Device Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.WorkOrders)
+            {
+                <tr>
+                    <td><a asp-controller="WorkOrder" asp-action="Details" asp-route-order="@item.OrderNumber">@item.OrderNumber</a></td>
+                    <td>@item.OrderStatus</td>
+                    <td>@item.StatusDate</td>
+                    <td>@item.DeviceCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+</div>
+<div class="col-xs-12">
+    <br />
+</div>  
+<a class="btn btn-success bottom-left" asp-controller="WorkOrder" asp-action="Create" asp-route-id="@Model.CusId">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a WorkOrder
+</a>
+<div class="col-xs-12">
+    <br />
 </div>
 
 @if (User.IsInRole("Admin"))
@@ -182,8 +217,8 @@
         {
             @Html.AntiForgeryToken()
 
-            <button type="submit" class="btn btn-danger col-xs-12" formnovalidate value="DELETE"
-                    onclick="return confirm('Delete this customer?')">
+            <button type="submit" class="btn btn-delete col-xs-12" formnovalidate value="DELETE"
+                    onclick="return confirm('Delete this customer? All Emails, Phone Numbers, Addresses, Work Orders, and Devices will be lost forever!')">
                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer
             </button>
         }

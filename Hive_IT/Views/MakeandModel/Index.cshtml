@@ -1,0 +1,54 @@
+﻿@model List<Hive_IT.Models.MakeandModel.ManufacturerModelViewModel>
+@{
+    ViewData["Title"] = "All Manufacturers and Models";
+}
+
+<h2 class="text-center">Manufacturers and Models</h2>
+<br />
+<div class="panel-group">
+    @foreach (var manufacturer in Model)
+    {
+        //TODO:work out style
+        <div class="panel panel-default manufacturer-panel">
+            <div class="clearfix panel-heading text-center">               
+                <a data-toggle="collapse" href="#@manufacturer.ManufacturerName" class="btn btn-primary clearfix">
+                @manufacturer.ManufacturerName</a>
+                <a class="btn btn-info pull-right" asp-action="Edit" asp-route-manuId="@manufacturer.IDNumber">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Update Name</a>
+                @using (Html.BeginForm("Delete", "MakeandModel", new { manuId = manufacturer.IDNumber }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="btn btn-delete clearfix pull-left" formnovalidate value="DELETE"
+                            onclick="return confirm('Delete Manufacturer? All device models will be deleted and all records will be permanently lost!')">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                    </button>
+                }
+            </div>
+            <div id="@manufacturer.ManufacturerName" class="panel-collapse collapse">
+                <ul class="list-group">
+                    @foreach (var deviceModel in manufacturer.LinkedModels)
+                     {
+                        <li class="list-group-item clearfix">@deviceModel.Model
+                            <a class="btn btn-info pull-right" asp-action="EditModel" asp-route-modId="@deviceModel.Identifier">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit Model
+                            </a>
+                        </li>
+                     }                    
+                </ul>
+            </div>
+            <div class="panel-footer clearfix">
+               <a class="btn btn-success pull-right" asp-action="CreateModel" asp-route-manuId="@manufacturer.IDNumber">
+                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a Model</a>
+            </div>
+        </div>
+    }
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix text-center">
+            <a class="btn btn-success" asp-action="Create">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a New Manufacturer</a>
+        </div>
+    </div>
+
+</div>
+

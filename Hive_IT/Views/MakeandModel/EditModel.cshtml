@@ -1,0 +1,39 @@
+﻿@model Hive_IT.Data.ModelofDevice
+@{
+    ViewData["Title"] = "Update Model Name";
+}
+<fieldset>
+    <h1 class="text-center">Update the Model Name</h1><br />
+    @using (Html.BeginForm("DeleteModel", "MakeandModel", new { modId = Model.Identifier }))
+    {
+        @Html.AntiForgeryToken()
+
+        <button type="submit" class="btn btn-delete clearfix pull-right" formnovalidate value="DELETE"
+                onclick="return confirm('Delete Model? Record will be permanently lost!')">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+        </button>
+    }
+    <br /><br />
+    <form role="form" asp-action="EditModel" class="text-center">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All"></div>
+        <div class="form-group">
+            <label asp-for="Model"></label>
+            <input type="text" asp-for="Model" class="form-control text-center" />
+            <span asp-validation-for="Model" class="field-validation-error"></span>
+        </div>
+
+        @Html.HiddenFor(model => model.Identifier)
+        @Html.HiddenFor(model => model.ManufacturerId)
+        @Html.Hidden("modId", Model.Identifier)
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left">Save Changes</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+</fieldset>

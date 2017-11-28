@@ -1,0 +1,33 @@
+﻿@model Hive_IT.Data.ModelofDevice
+@{
+    ViewData["Title"] = "Add a new Device Model";
+}
+<fieldset>
+    <h1 class="text-center">Add a new Model of Device To the Records</h1><br />
+
+    <form role="form" asp-action="CreateModel" class="text-center">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All"></div>
+
+        <div class="form-group">
+            <label asp-for="Model"></label>
+            <input type="text" asp-for="Model" class="form-control" />
+            <span asp-validation-for="Model" class="field-validation-error"></span>
+        </div>
+
+        @Html.HiddenFor(model => model.ManufacturerId)
+        @Html.Hidden("manuId", Model.ManufacturerId)
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left">Create</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+</fieldset>
+
+

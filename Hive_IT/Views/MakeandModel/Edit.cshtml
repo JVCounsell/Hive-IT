@@ -1,0 +1,32 @@
+﻿@model Hive_IT.Data.Manufacturer
+
+@{
+    ViewData["Title"] = "Update Manufacturer Name";
+}
+
+<fieldset>
+    <h1 class="text-center">Update the Manufacturer Name</h1>
+    <form role="form" asp-action="Edit" class="text-center">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All"></div>
+
+        <div class="form-group">
+            <label asp-for="ManufacturerName"></label>
+            <input type="text" asp-for="ManufacturerName" class="form-control" />
+            <span asp-validation-for="ManufacturerName" class="field-validation-error"></span>
+        </div>
+
+        @Html.HiddenFor(manu => manu.ManufacturerId)
+        @Html.Hidden("manuId", Model.ManufacturerId)
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left">Save Changes</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+</fieldset>

@@ -71,12 +71,7 @@
                 <th class="text-center"><a></a> Surname </th>
                 <th class="text-center"> Date Created </th>
                 <th class="text-center"> Email </th>
-                <th class="text-center"> Phone </th>
-                @if (User.IsInRole("Admin"))
-                {
-                    <th class="text-center"> Action</th>
-                }
-
+                <th class="text-center"> Phone </th>                
             </tr>
         </thead>
         <tbody>
@@ -97,21 +92,7 @@
                     </td>
                     <td>
                         @item.FirstPhone
-                    </td>
-                    @if (User.IsInRole("Admin"))
-                {
-                        <td>
-                            @using (Html.BeginForm("Delete", "Customer", new { id = item.ItemID }))
-                            {
-                                @Html.AntiForgeryToken()
-
-                                <button type="submit" formnovalidate value="DELETE" class="btn btn-danger"
-                                        onclick="return confirm('Are you sure you want to delete this Customer?')">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Customer
-                                </button>
-                            }
-                        </td>
-                    }
+                    </td>                   
                 </tr>
             }
         </tbody>

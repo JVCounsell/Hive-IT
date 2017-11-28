@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 
 namespace Hive_IT.Models.WorkOrders
 {
-    public class DeviceViewModel
-    {       
-        public string DeviceNumber { get; set; }
+    public class AddDeviceViewModel
+    {
+        public string DeviceId { get; set; }
 
         [Required]
         public string Status { get; set; }
-        public string StatusLastUpdatedAt { get; set; }
-
+                
         [Required]
         public string Manufacturer { get; set; }
         public List<SelectListItem> Manufacturers { get; set; }
@@ -22,7 +21,7 @@ namespace Hive_IT.Models.WorkOrders
         [Required]
         public string Model { get; set; }
         public List<SelectListItem> Models { get; set; }
-        
+
         [Required]
         public string Password { get; set; }
 
@@ -36,8 +35,7 @@ namespace Hive_IT.Models.WorkOrders
         [Required]
         public string Problem { get; set; }
         public string Notes { get; set; }
-        
-        public List<SelectListItem> StatusList { get; set; }
-        public string OrderNumber { get; set; }
+
+        public string WorkOrderNumber { get; set; }
     }
 }

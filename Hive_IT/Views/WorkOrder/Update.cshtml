@@ -5,6 +5,21 @@
 }
 
 <fieldset>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="clearfix pull-right">
+            @using (Html.BeginForm("deletedevice", "workorder", new { deviceNumber = Model.DeviceNumber }))
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="btn btn-delete" formnovalidate value="DELETE"
+                        onclick="return confirm('Delete this device? This will be lost forever!')">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Device
+                </button>
+            }
+        </div><br />
+    }
+
     <h1 class="text-center">Update Device</h1>
     <br />
 
@@ -20,13 +35,13 @@
            
         <div class="form-group col-xs-6">
             <label asp-for="Manufacturer"></label>
-            <input type="text" asp-for="Manufacturer" class="form-control" />
+            <select asp-for="Manufacturer" asp-items="@Model.Manufacturers" class="form-control"></select>
             <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
         </div>
 
         <div class="form-group col-xs-6">
             <label asp-for="Model"></label>
-            <input type="text" asp-for="Model" class="form-control" />
+            <select asp-for="Model" asp-items="@Model.Models" class="form-control"></select>
             <span asp-validation-for="Model" class="field-validation-error"></span>
         </div>
 

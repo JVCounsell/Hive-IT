@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Hive_IT.Data;
 using Hive_IT.Models.Customers;
 using Microsoft.AspNetCore.Authorization;
+using Hive_IT.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -94,7 +95,24 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("List");
             }
 
-            //if it does send all data of customer to new model to be displayed
+            //grab all the work orders associated with the customer
+            var workOrders = _db.WorkOrders.Where(o => o.CustomerId == id)
+                .OrderByDescending(o => o.WorkOrderNumber).ToList();
+
+            var listOrders = new List<WorkOrderListViewModel>();
+            foreach (var order in workOrders)
+            {
+                var listOrder = new WorkOrderListViewModel
+                {
+                    OrderNumber = order.WorkOrderNumber,
+                    OrderStatus = order.Status,
+                    StatusDate = order.StatusLastUpdatedAt,
+                    DeviceCount = _db.Devices.Count(d => d.WorkOrderNumber == order.WorkOrderNumber)
+                };
+                listOrders.Add(listOrder);
+            }
+
+            //if exists send all data of customer to new model to be displayed
             var profile = new CustomerProfileViewModel
             {
                 Given = customerToFind.FirstName,
@@ -103,7 +121,8 @@ namespace Hive_IT.Controllers
                 Phones = _db.PhoneNumbers.Where(p => p.CustomerId == id).ToList(),
                 Emails = _db.Emails.Where(e => e.CustomerId == id).ToList(),
                 Addresses = _db.MailingAddresses.Where(x => x.CustomerId == id).ToList(),
-                CusId = customerToFind.CustomerId
+                CusId = customerToFind.CustomerId,
+                WorkOrders = listOrders
             };
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -112,6 +131,7 @@ namespace Hive_IT.Controllers
             return View(profile);
         }
 
+        //TODO: Once style and form for profile is changed and settled follow suit with other actions and views
         [HttpGet]
         public IActionResult EditNameProfile(long id)
         {
@@ -290,6 +310,22 @@ namespace Hive_IT.Controllers
                 foreach (var linkedAddress in linkedAddresses)
                 {
                     _db.Remove(linkedAddress);
+                }
+            }
+
+            //check if there are any associated Work Orders and if so delete all devices linked to
+            //that order first then delete the order
+            if(_db.WorkOrders.Any(o => o.CustomerId == id))
+            {
+                var linkedOrders = _db.WorkOrders.Where(o => o.CustomerId == id);
+                foreach (var order in linkedOrders)
+                {
+                    var linkedDevices = _db.Devices.Where(d => d.WorkOrderNumber == order.WorkOrderNumber);
+                    foreach (var device in linkedDevices)
+                    {
+                        _db.Remove(device);
+                    }
+                    _db.Remove(order);
                 }
             }
 

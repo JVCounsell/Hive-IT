@@ -100,6 +100,21 @@ thead {
     border-radius: 5px;
 }
 
+.btn-delete {
+    background-color: red;
+    color: white;
+}
+
+.btn-delete:hover {
+    color: white;
+    background-color: #a80000;
+}
+
+.btn-delete:focus {
+    color: white;
+    background-color: #a80000;
+}
+
 .default-warning{
     font-size: 20px;
     color: black;
@@ -180,6 +195,24 @@ thead {
     color: #31708f;
 }
 
+#shipping-content {
+    background-color: lightblue;
+    color: #1c5775;
+}
+
+.manufacturer-panel {
+    border-color: #444444;
+}
+
+.manufacturer-panel .panel-heading {
+    background-color: #444444;
+    color: white;
+}
+
+.manufacturer-panel .panel-heading form {
+    display: inline
+}
+
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -196,11 +229,6 @@ thead {
 /* Make .svg files in the carousel display properly in older browsers */
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;
-}
-
-/* QR code generator */
-#qrCode {
-    margin: 15px;
 }
 
 /* Hide/rearrange for smaller screens */

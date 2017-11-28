@@ -1,0 +1,28 @@
+﻿@model Hive_IT.Data.Manufacturer
+@{
+    ViewData["Title"] = "New Manufacturer";
+}
+<fieldset>
+    <h1 class="text-center">Add a New Manufacturer to Records</h1><br />
+
+    <form role="form" asp-action="Create" class="text-center">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All"></div>
+
+        <div class="form-group">
+            <label asp-for="ManufacturerName"></label>
+            <input type="text" asp-for="ManufacturerName" class="form-control" />
+            <span asp-validation-for="ManufacturerName" class="field-validation-error"></span>
+        </div>
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left">Create</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+</fieldset>

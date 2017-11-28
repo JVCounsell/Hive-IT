@@ -134,10 +134,56 @@ namespace Hive_IT.Controllers
                 StatusList = listOfStatuses,
                 LinkedDevices = _db.Devices.Where(d => d.WorkOrderNumber == workOrder.WorkOrderNumber).ToList(),
                 Emails = _db.Emails.Where(e => e.CustomerId == customer.CustomerId).ToList(),
-                Phones = _db.PhoneNumbers.Where(p => p.CustomerId == customer.CustomerId).ToList()
+                Phones = _db.PhoneNumbers.Where(p => p.CustomerId == customer.CustomerId).ToList(),
+                ShippingAddresses = _db.MailingAddresses.Where(address => address.CustomerId == customer.CustomerId).ToList()
             };
             
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Details(string order, string Status)
+        {
+            // Find associated work order, if it doesn't exist redirect to list of orders 
+            var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order);
+            if (workOrder == null)
+            {
+                return RedirectToAction(nameof(List));
+            }
+
+            //find associated customer, customer must exist as work order cannot be created without it    
+            var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == workOrder.CustomerId);
+
+            //initialization for later check
+            var initialStatus = workOrder.Status;
+
+            //create a switch to see what the status was changed to and update status and
+            //corresponding time field
+            switch (Status)
+            {
+                case "Paid":
+                    workOrder.Status = "Paid";
+                    workOrder.PaidAt = DateTime.Now.ToString(timeFormat);
+                    break;
+                case "Complete":
+                    workOrder.Status = "Complete";
+                    workOrder.CompletionAt = DateTime.Now.ToString(timeFormat);
+                    break;                
+                default:
+                    workOrder.Status = "Created";
+                    break;
+            }
+
+            //check to see if the status is updated and if so change corresponding field
+            if (initialStatus != workOrder.Status)
+            {
+                workOrder.StatusLastUpdatedAt = DateTime.Now.ToString(timeFormat);
+            }
+
+            _db.SaveChanges();
+
+            return RedirectToAction("Details", "WorkOrder", new {order = order });
         }
 
         [HttpGet]
@@ -174,7 +220,9 @@ namespace Hive_IT.Controllers
                 StatusLastUpdatedAt = update.StatusLastUpdatedAt,
                 StatusList = listOfStatuses,
                 Manufacturer = update.Manufacturer,
+                Manufacturers = GenerateManufacturerList(),
                 Model = update.Model, 
+                Models = GenerateModelList(),
                 Serial = update.Serial,
                 Password = update.Password,
                 Provider = update.Provider,
@@ -210,6 +258,8 @@ namespace Hive_IT.Controllers
                 listOfStatuses.Add(statusItem);
             }
             updatedModel.StatusList = listOfStatuses;
+            updatedModel.Manufacturers = GenerateManufacturerList();
+            updatedModel.Models = GenerateModelList();
 
             if (!ModelState.IsValid)
             {
@@ -277,19 +327,29 @@ namespace Hive_IT.Controllers
             {
                 return RedirectToAction("List", "Customer");
             }
-            return View();
+
+            var toAdd = new AddDeviceViewModel {
+                Manufacturers = GenerateManufacturerList(),
+                Models = GenerateModelList()
+            };
+
+            return View(toAdd);
         }
 
         // id is customer id.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(long id, Device created)
+        public ActionResult Create(long id, AddDeviceViewModel created)
         {
             // make sure there is a customer to associate work order to
             if (_db.Customers.FirstOrDefault(c => c.CustomerId == id) == null)
             {
                 return RedirectToAction("List", "Customer");
             }
+
+            //reassignment in case model is invalid
+            created.Manufacturers = GenerateManufacturerList();
+            created.Models = GenerateModelList();
 
             if (!ModelState.IsValid)
             {
@@ -308,16 +368,11 @@ namespace Hive_IT.Controllers
 
             //save the work order so that there is an entry for the device to associate to
             _db.WorkOrders.Add(workOrder);
-            _db.SaveChanges(); 
+            _db.SaveChanges();
 
-            created.WorkOrderNumber = workOrder.WorkOrderNumber;
-
-            //will most likely be same as work order since not enough time has passed but this number won't be public
-            created.DeviceId = DateTime.Now.ToString(numberFormat);
-            created.CreatedAt = workOrder.TimeCreated;
-            created.StatusLastUpdatedAt = workOrder.TimeCreated;
-
-            _db.Devices.Add(created);
+            var createdDevice = GenerateDeviceFromViewModel(created, workOrder.WorkOrderNumber);
+            
+            _db.Devices.Add(createdDevice);
             _db.SaveChanges();
             
             return RedirectToAction("Details", "WorkOrder", new { order = created.WorkOrderNumber });
@@ -333,32 +388,37 @@ namespace Hive_IT.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-            var newDevice = new Device { WorkOrderNumber = order };
+            var newDevice = new AddDeviceViewModel {
+                WorkOrderNumber = order,
+                Manufacturers = GenerateManufacturerList(),
+                Models = GenerateModelList()
+            };
 
             return View(newDevice);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Add(string order, Device created)
+        public ActionResult Add(string order, AddDeviceViewModel created)
         {
             //make sure there is a workorder to connect to
-            if (_db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order) == null)
+            var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order);
+            if ( workOrder == null)
             {
                 return RedirectToAction(nameof(List));
             }
+
+            created.Manufacturers = GenerateManufacturerList();
+            created.Models = GenerateModelList();
 
             if (!ModelState.IsValid)
             {
                 return View(created);
             }
-            
-            //give id and fill status times
-            created.DeviceId = DateTime.Now.ToString(numberFormat);
-            created.CreatedAt = DateTime.Now.ToString(timeFormat);
-            created.StatusLastUpdatedAt = DateTime.Now.ToString(timeFormat);
 
-            _db.Devices.Add(created);
+            var createdDevice = GenerateDeviceFromViewModel(created, workOrder.WorkOrderNumber);
+            
+            _db.Devices.Add(createdDevice);
             _db.SaveChanges();
 
             return RedirectToAction("Details", "WorkOrder", new { order = order });
@@ -367,6 +427,7 @@ namespace Hive_IT.Controllers
 
         // This should not be an action that happens often at all, will only be admin and should be accessed differently
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(string orderNumber)
         {
@@ -377,14 +438,16 @@ namespace Hive_IT.Controllers
                 return RedirectToAction(nameof(List));
             }
 
+            //delete all associated devices, should always be one but an admin may delete all devices from a work
+            //order for some reason so just a check
             if (_db.Devices.Any(d => d.WorkOrderNumber == toDelete.WorkOrderNumber))
             {
                 var linkedDevices = _db.Devices.Where(d => d.WorkOrderNumber == toDelete.WorkOrderNumber);
-                foreach(var device in linkedDevices)
+                foreach (var device in linkedDevices)
                 {
                     _db.Remove(device);
                 }
-            }
+            }                      
 
             _db.Remove(toDelete);
             _db.SaveChanges();
@@ -392,9 +455,9 @@ namespace Hive_IT.Controllers
             return RedirectToAction(nameof(List));
             
         }
-
-        //only admins for this?
+                
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteDevice(string deviceNumber)
         {
@@ -410,6 +473,57 @@ namespace Hive_IT.Controllers
 
             return RedirectToAction("Details", "WorkOrder", new {order = toDelete.WorkOrderNumber });
 
+        }
+
+        private List<SelectListItem> GenerateManufacturerList()
+        {
+            var manufacturers = _db.Manufacturers.OrderBy(manu => manu.ManufacturerName).ToList();
+            var manufacturerList = new List<SelectListItem>();
+
+            foreach (var manufacturer in manufacturers)
+            {
+                var listItem = new SelectListItem
+                { Value=manufacturer.ManufacturerName, Text=manufacturer.ManufacturerName  };
+                manufacturerList.Add(listItem);
+            }
+
+            return manufacturerList;
+        }
+
+        private List<SelectListItem> GenerateModelList()
+        {
+            var models = _db.DeviceModels.OrderBy(mod =>mod.Model).ToList();
+            var modelList = new List<SelectListItem>();
+
+            foreach (var model in models)
+            {
+                var listItem = new SelectListItem
+                { Value= model.Model, Text = model.Model };
+                modelList.Add(listItem);
+            }
+
+            return modelList;
+        }
+
+        private Device GenerateDeviceFromViewModel(AddDeviceViewModel created, string orderNumber)
+        {
+            var createdDevice = new Device
+            {
+                DeviceId = DateTime.Now.ToString(numberFormat),
+                Status = "Created",
+                Manufacturer = created.Manufacturer,
+                Model = created.Model,
+                CreatedAt = DateTime.Now.ToString(timeFormat),
+                Password = created.Password,
+                Provider = created.Provider,
+                Serial = created.Serial,
+                Notes = created.Notes,
+                Problem = created.Problem,
+                StatusLastUpdatedAt = DateTime.Now.ToString(timeFormat),
+                WorkOrderNumber = orderNumber
+            };
+
+            return createdDevice;
         }
     }
 }
