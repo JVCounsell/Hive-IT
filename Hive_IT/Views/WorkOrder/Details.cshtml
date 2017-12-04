@@ -35,21 +35,20 @@
     {       
         <label asp-for="Status"></label>
         <input type="text"  class="text-center" disabled asp-for="Status" asp-items="@Model.StatusList" />
+        <b>Last Updated &#64 </b>@Model.StatusChangedAt
     }
     else
     {
-        <form role="form" asp-action="Details">
+        <form role="form" id="status-form" asp-action="Details">
             @Html.AntiForgeryToken()
 
             <div class="form-group">
                 <label asp-for="Status"></label>
-                <select asp-for="Status" asp-items="@Model.StatusList"></select>
+                <select id="status-select" asp-for="Status" asp-items="@Model.StatusList"></select>
                 <b>Last Updated &#64 </b>@Model.StatusChangedAt
             </div>
             
-            @Html.Hidden("order", Model.OrderNumber)
-
-            <button type="submit" class="btn btn-success btn-sm">Change Status</button>
+            <input hidden id="order-number" value="@Model.OrderNumber"/>
         </form>        
     }
    

@@ -9,6 +9,7 @@ using Hive_IT.Models;
 using Hive_IT.Models.WorkOrders;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace Hive_IT.Controllers
 {
@@ -24,10 +25,10 @@ namespace Hive_IT.Controllers
         {
             "Created", "Diagnosed", "Being Repaired", "Repaired", "Not Fixable", "Picked Up"
         };
-
+       
         public WorkOrderController(CustomerDataContext db)
         {
-            _db = db;
+            _db = db;           
         }
 
         [HttpGet]
@@ -137,19 +138,25 @@ namespace Hive_IT.Controllers
                 Phones = _db.PhoneNumbers.Where(p => p.CustomerId == customer.CustomerId).ToList(),
                 ShippingAddresses = _db.MailingAddresses.Where(address => address.CustomerId == customer.CustomerId).ToList()
             };
-            
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView(viewModel);
+            }
+
             return View(viewModel);
         }
 
+        //will be an ajax call to get this, return bool for whether action is successfully changing or not
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Details(string order, string Status)
+        public bool Details(string order, string Status)
         {
             // Find associated work order, if it doesn't exist redirect to list of orders 
             var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order);
             if (workOrder == null)
             {
-                return RedirectToAction(nameof(List));
+                return false;
             }
 
             //find associated customer, customer must exist as work order cannot be created without it    
@@ -182,8 +189,7 @@ namespace Hive_IT.Controllers
             }
 
             _db.SaveChanges();
-
-            return RedirectToAction("Details", "WorkOrder", new {order = order });
+            return true;
         }
 
         [HttpGet]
@@ -222,7 +228,7 @@ namespace Hive_IT.Controllers
                 Manufacturer = update.Manufacturer,
                 Manufacturers = GenerateManufacturerList(),
                 Model = update.Model, 
-                Models = GenerateModelList(),
+                Models = GenerateModelList(update.Manufacturer),
                 Serial = update.Serial,
                 Password = update.Password,
                 Provider = update.Provider,
@@ -259,7 +265,7 @@ namespace Hive_IT.Controllers
             }
             updatedModel.StatusList = listOfStatuses;
             updatedModel.Manufacturers = GenerateManufacturerList();
-            updatedModel.Models = GenerateModelList();
+            updatedModel.Models = GenerateModelList(update.Manufacturer);
 
             if (!ModelState.IsValid)
             {
@@ -490,9 +496,20 @@ namespace Hive_IT.Controllers
             return manufacturerList;
         }
 
-        private List<SelectListItem> GenerateModelList()
+        private List<SelectListItem> GenerateModelList(string manufacturer = null)
         {
-            var models = _db.DeviceModels.OrderBy(mod =>mod.Model).ToList();
+            var models = new List<ModelofDevice>();
+            if (manufacturer == null)
+            {
+                int manufacturerId = _db.Manufacturers.OrderBy(manu => manu.ManufacturerName).FirstOrDefault().ManufacturerId;
+                models = _db.DeviceModels.Where(mod => mod.ManufacturerId == manufacturerId).OrderBy(mod => mod.Model).ToList();
+            }
+            else
+            {
+                int manufacturerId = _db.Manufacturers.FirstOrDefault(manu => manu.ManufacturerName == manufacturer).ManufacturerId;
+                models = _db.DeviceModels.Where(mod => mod.ManufacturerId == manufacturerId).OrderBy(mod => mod.ManufacturerId ).ToList();
+            }
+           
             var modelList = new List<SelectListItem>();
 
             foreach (var model in models)
@@ -524,6 +541,27 @@ namespace Hive_IT.Controllers
             };
 
             return createdDevice;
+        }
+
+        //action for AJAX  to call
+        public string ReturnLinkedModels(string manufacturer)
+        {           
+            //find the manufacturer with the selected name and get its id
+            var selectedManufacturerId = _db.Manufacturers.FirstOrDefault(manufact => manufact.ManufacturerName == manufacturer).ManufacturerId;
+
+            //then find all models that are linked to that id
+            var linkedModels = _db.DeviceModels.Where(mod => mod.ManufacturerId == selectedManufacturerId);
+
+            //create a list of strings to hold on to the names, empty so that foreach loop can add
+            List<string> listOfModels = new List<string>();
+            foreach(var linked in linkedModels)
+            {                
+                listOfModels.Add(linked.Model);
+            }
+
+            //convert list to model, so that Json has a models key (better format imo)
+            var models = new ModelNames { Models = listOfModels };
+            return JsonConvert.SerializeObject(models);
         }
     }
 }

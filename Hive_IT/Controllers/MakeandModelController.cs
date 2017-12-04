@@ -14,10 +14,10 @@ namespace Hive_IT.Controllers
     public class MakeandModelController : Controller
     {
         private readonly CustomerDataContext _db;
-
+       
         public MakeandModelController(CustomerDataContext db)
         {
-            _db = db;
+            _db = db;            
         }
                
         //Should show all the Manufacturers and Models
@@ -26,7 +26,7 @@ namespace Hive_IT.Controllers
         {
             var allManufacturers = _db.Manufacturers.ToList();
             var allMakesAndModels = new List<ManufacturerModelViewModel>();
-
+            
             foreach(var manufacturer in allManufacturers)
             {
                 //create a list of all linked models, ordered ascending by the name as would expect in a list
@@ -40,6 +40,7 @@ namespace Hive_IT.Controllers
                     ManufacturerName = manufacturer.ManufacturerName,
                     LinkedModels = linkedModels
                 };
+                
                 allMakesAndModels.Add(makeandModel);
             }
 
@@ -73,9 +74,9 @@ namespace Hive_IT.Controllers
 
             _db.Manufacturers.Add(created);
             _db.SaveChanges();
-
+            
             //after create a manufacture redirect to create some models otherwise why was it added, grab last one as id is incremental
-             return RedirectToAction("CreateModel", "MakeandModel", new {manuId = _db.Manufacturers.Last().ManufacturerId });            
+            return RedirectToAction("CreateModel", "MakeandModel", new {manuId = _db.Manufacturers.Last().ManufacturerId });            
         }
         
         [HttpGet]
@@ -89,8 +90,7 @@ namespace Hive_IT.Controllers
             var toAdd = new ModelofDevice { ManufacturerId = manuId };
             return View(toAdd);
         }
-        
-        //should this be just one or multiple? stick with one for now
+                
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateModel(int manuId, ModelofDevice created)
@@ -257,6 +257,7 @@ namespace Hive_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteModel(int modId)
         {
+            //make sure the model exists
             var toDelete = _db.DeviceModels.FirstOrDefault(mod => mod.Identifier == modId);
             if (toDelete == null)
             {
@@ -266,6 +267,6 @@ namespace Hive_IT.Controllers
             _db.Remove(toDelete);
 
             return View();
-        }
+        }               
     }
 }

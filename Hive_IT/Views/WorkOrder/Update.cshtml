@@ -35,13 +35,13 @@
            
         <div class="form-group col-xs-6">
             <label asp-for="Manufacturer"></label>
-            <select asp-for="Manufacturer" asp-items="@Model.Manufacturers" class="form-control"></select>
+            <select asp-for="Manufacturer" asp-items="@Model.Manufacturers" class="form-control" id="manufacturer-select"></select>
             <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
         </div>
 
         <div class="form-group col-xs-6">
             <label asp-for="Model"></label>
-            <select asp-for="Model" asp-items="@Model.Models" class="form-control"></select>
+            <select asp-for="Model" asp-items="@Model.Models" class="form-control" id="model-select"></select>
             <span asp-validation-for="Model" class="field-validation-error"></span>
         </div>
 
