@@ -18,48 +18,37 @@
         <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
     </div>
 
-    @{
-
-
-        if (Model.Phones.Any())
+    <ul class="list-group col-xs-6 clearfix" id="customer-phone-list">
+        <li class="list-group-item clearfix">
+            Phonenumbers:
+        </li>
+        @foreach (var phone in Model.Phones)
         {
-            <div class="panel-group text-center">
-                @foreach (var phone in Model.Phones)
-                {
-                    @Html.Partial("_ViewPhone", phone)
-                }
-
-                @Html.Partial("_AddPhone", Model.AlterPhone)
-            </div>
+            @Html.Partial("_ViewPhone", phone)
         }
-        else
+        @Html.Partial("_AddPhone", Model.AlterPhone)
+    </ul>
+
+    <ul class="list-group col-xs-6 clearfix" id="customer-email-list">
+        <li class="list-group-item clearfix">
+            Email Addresses:
+        </li>
+        @foreach (var email in Model.Emails)
         {
-            <div class="panel-group text-center">
-                @Html.Partial("_AddPhone", Model.AlterPhone)
-            </div>
-
+            @Html.Partial("_ViewEmail", email)
         }
+    </ul>
 
-        if (Model.Emails.Any())
+    <ul class="list-group col-xs-12 clearfix" id="customer-address-list">
+        <li class="list-group-item clearfix">
+            Mailing Addresses:
+        </li>
+        @foreach (var address in Model.Addresses)
         {
-            <div class="panel-group text-center">
-                @foreach (var email in Model.Emails)
-                {
-                    @Html.Partial("_ViewEmail", email)
-                }
-            </div>
+            @Html.Partial("_ViewAddress", address)
         }
+    </ul>
 
-        if (Model.Addresses.Any())
-        {
-            <div class="panel-group text-center">
-                @foreach (var address in Model.Addresses)
-                {
-                    @Html.Partial("_ViewAddress", address)
-                }
-            </div>
-        }
-    }
     <div>
         <br /><br />
     </div>

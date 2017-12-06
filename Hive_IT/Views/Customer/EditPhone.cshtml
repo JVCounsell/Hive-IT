@@ -18,50 +18,43 @@
         <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
     </div>
 
-    @{
-        <div class="clearfix">
-            <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CusId">
-                <span class="glyphicon glyphicon-stop"></span> Cancel Edit
-            </a>
-        </div>
-        if (Model.Phones.Any())
+    <ul class="list-group col-xs-6 clearfix" id="customer-phone-list">
+        <li class="list-group-item clearfix">
+            Phonenumbers:
+        </li>
+        @foreach (var phone in Model.Phones)
         {
-            <div class="panel-group text-center">
-                @foreach (var phone in Model.Phones)
-                {
-                    if (phone.PhoneId == Model.AlterPhone.PhoneId)
-                    {
-                        @Html.Partial("_EditPhone", Model.AlterPhone)
-                    }
-                    else
-                    {
-                        @Html.Partial("_ViewPhone", phone)
-                    }
-
-                }
-            </div>
+            if(phone.PhoneId == Model.AlterPhone.PhoneId)
+            {
+                @Html.Partial("_EditPhone", phone)
+            }
+            else
+            {
+                @Html.Partial("_ViewPhone", phone)
+            }
         }
+    </ul>
 
-        if (Model.Emails.Any())
+    <ul class="list-group col-xs-6 clearfix" id="customer-email-list">
+        <li class="list-group-item clearfix">
+            Email Addresses:
+        </li>
+        @foreach (var email in Model.Emails)
+        {            
+            @Html.Partial("_ViewEmail", email)            
+        }
+    </ul>
+
+    <ul class="list-group col-xs-12 clearfix" id="customer-address-list">
+        <li class="list-group-item clearfix">
+            Mailing Addresses:
+        </li>
+        @foreach (var address in Model.Addresses)
         {
-            <div class="panel-group text-center">
-                @foreach (var email in Model.Emails)
-                {
-                    @Html.Partial("_ViewEmail", email)
-                }
-            </div>
+            @Html.Partial("_ViewAddress", address)
         }
+    </ul>
 
-        if (Model.Addresses.Any())
-        {
-            <div class="panel-group text-center">
-                @foreach (var address in Model.Addresses)
-                {
-                    @Html.Partial("_ViewAddress", address)
-                }
-            </div>
-        }
-    }
     <div>
         <br /><br />
     </div>

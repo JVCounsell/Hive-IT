@@ -24,7 +24,7 @@ namespace Hive_IT.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            var allManufacturers = _db.Manufacturers.ToList();
+            var allManufacturers = _db.Manufacturers.OrderBy(manu => manu.ManufacturerName).ToList();
             var allMakesAndModels = new List<ManufacturerModelViewModel>();
             
             foreach(var manufacturer in allManufacturers)

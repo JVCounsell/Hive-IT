@@ -91,4 +91,68 @@
             }
         });
     });
+
+    var orderStatus = $('#status-select').val();
+    switch (orderStatus){
+        case "Created":
+            $('#status-select').attr('class', 'status-created');
+            break;
+        case "Paid":
+            $('#status-select').attr('class', 'status-paid');
+            break;
+        case "Complete":
+            $('#status-select').attr('class', 'status-complete');
+            break;
+        default:
+            $('#status-select').attr('class', 'status-created');
+            break;
+    }  
+
+    //for when the page loads change the color based on status value
+    var orderStatus = $('#device-status-select').val();
+    switch (orderStatus) {
+        case "Diagnosed":
+            $('#device-status-select').attr('class', 'form-control').addClass('device-status-diagnosed');
+            break;
+        case "Being Repaired":
+            $('#device-status-select').attr('class', 'form-control').addClass('device-status-beingfix');
+            break;
+        case "Repaired":
+            $('#device-status-select').attr('class', 'form-control').addClass('device-status-repaired');
+            break;
+        case "Not Fixable":
+            $('#device-status-select').attr('class', 'form-control').addClass('device-status-notfix');
+            break;
+        case "Picked Up":
+            $('#device-status-select').attr('class', 'form-control').addClass('device-status-picked');
+            break;
+        default:
+            $('#device-status-select').attr('class', 'form-control');
+            break;
+    }    
+    //change colors on status change
+    $('#device-status-select').on('change', function () {
+        var orderStatus = $('#device-status-select').val();
+        switch (orderStatus) {
+            case "Diagnosed":
+                $('#device-status-select').attr('class', 'form-control').addClass('device-status-diagnosed');
+                break;
+            case "Being Repaired":
+                $('#device-status-select').attr('class', 'form-control').addClass('device-status-beingfix');
+                break;
+            case "Repaired":
+                $('#device-status-select').attr('class', 'form-control').addClass('device-status-repaired');
+                break;
+            case "Not Fixable":
+                $('#device-status-select').attr('class', 'form-control').addClass('device-status-notfix');
+                break;
+            case "Picked Up":
+                $('#device-status-select').attr('class', 'form-control').addClass('device-status-picked');
+                break;
+            default:
+                $('#device-status-select').attr('class', 'form-control');
+                break;
+        }    
+    });
+
 });

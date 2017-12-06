@@ -27,7 +27,7 @@ body {
 }
 
 
-/* Styling base classes to look better*/
+/* Paging Element Formatting*/
 .pager .next a{
     color: #fff;
     background-color: #5bc0de;
@@ -52,6 +52,8 @@ body {
     border-color: #0390ba;
 }
 
+
+/*Table formatting*/
 thead {
     color:white;
     background-color: #111111;
@@ -74,22 +76,33 @@ thead {
     background-color: #dbdbdb;
 }
 
-.btn-group form{
-    display:inline
+#order-table .order-button {
+    background-color: #238ffc;
+    border-color: #238ffc;
+    color: white;
 }
 
-.btn-group form button {
-   border-bottom-left-radius: 0;
-   border-top-left-radius: 0;
+#order-table .order-button:hover {
+    background-color: #0066CC;
+    border-color: #0066CC;
+    color: white;
 }
+
+/*Blue buttons on blue panels have a white border to distinguish*/
 .panel-primary .panel-heading .btn-primary {
     border-color: white;
 }
 
 
-/* Custom Class styling*/
+/* Validation error styling*/
 .input-validation-error{
     color:red;
+    background-color: white;
+    border-radius: 5px;
+}
+
+#input-validation-error {
+    color: red;
     background-color: white;
     border-radius: 5px;
 }
@@ -100,6 +113,8 @@ thead {
     border-radius: 5px;
 }
 
+
+/*Custom Delete button styling*/
 .btn-delete {
     background-color: red;
     color: white;
@@ -115,6 +130,17 @@ thead {
     background-color: #a80000;
 }
 
+.btn-group form {
+    display: inline
+}
+
+.btn-group form button {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+
+/*Warning for defaultuser user*/
 .default-warning{
     font-size: 20px;
     color: black;
@@ -126,11 +152,17 @@ thead {
     text-align:center;
 }
 
+/*Home Page*/
 .description{
     font-size: 1.4em;
     text-indent: 3em;
 }
 
+.home-buttons li a {
+    margin-bottom: 20px;
+}
+
+/*User Profile Formatting*/
 #username-panel {
     border-color: #222222;
 }
@@ -158,10 +190,17 @@ thead {
     color: white;
 }
 
-.home-buttons li a {
-    margin-bottom: 20px;
+#phone-panel {   
+    border-color: #3c763d;    
 }
 
+#phone-panel .panel-heading {
+    background-color: #3c763d;
+    color: white;
+}
+
+
+/*Customer profile formatting*/
 .customer-heading-panel{
     border: 1px solid black;
 }
@@ -177,41 +216,243 @@ thead {
     border-top: 1px #ddd;
 }
 
-.panel-customer-phone {
-    border: 1px solid #069999;
+#customer-phone-list > li:first-of-type {
+    font-size: 1.2em;
+    color:white ;
+    border-color: #3c763d;
+    background-color: #3c763d;
 }
 
-.panel-customer-phone .panel-heading {
-    color: white;
-    background-color: #15a3a3;
+#customer-phone-list li:first-of-type a{
+   border-radius: 15px;
 }
 
-.panel-customer-address {
-    border: 1px solid #bce8f1;
+#customer-phone-list li {
+    color: #3c763d;
+    border-color: #3c763d;
+    background-color: white;
 }
 
-.panel-customer-address .panel-heading {
-    background-color: #bddded;
-    color: #31708f;
+#customer-phone-list li #input-validation-error li {
+    color: red;
+    background-color: white;
+    border-radius: 5px;
 }
 
-#shipping-content {
+#customer-phone-list li input {
+    color: #3c763d;
+    border-color: #3c763d;
+    background-color: white;
+}
+
+#customer-email-list > li:first-of-type {
+    font-size: 1.2em;
+    background-color: #3582ff;
+    border-color: #3582ff;
+    color: white;   
+}
+
+#customer-email-list li:first-of-type a {
+    border-radius: 15px;
+}
+
+#customer-email-list li {
+    background-color: white;
+    border-color: #3582ff;
+    color: #3582ff;
+}
+
+#customer-email-list li #input-validation-error li {
+    color: red;
+    background-color: white;
+    border-radius: 5px;
+}
+
+#customer-email-list li input {
+    background-color: white;
+    border-color: #3582ff;
+    color: #3582ff;
+}
+
+#customer-address-list > li:first-of-type {
+    font-size: 1.2em;
     background-color: lightblue;
+    color: #1c5775;
+    border: 1px solid #1c5775;
+}
+
+#customer-address-list li:first-of-type a {
+    border-radius: 15px;
+}
+
+#customer-address-list li {
+    background-color: white;
+    border-color: #1c5775;
     color: #1c5775;
 }
 
+#customer-address-list li #input-validation-error li{
+    color: red;
+    background-color: white;
+    border-radius: 5px;
+}
+
+#customer-address-list li input {
+    background-color: white;
+    border-color: #1c5775;
+    color: #1c5775;
+}
+
+
+/*Formatting list of manufacturers and models*/
 .manufacturer-panel {
     border-color: #444444;
 }
 
 .manufacturer-panel .panel-heading {
     background-color: #444444;
-    color: white;
 }
 
 .manufacturer-panel .panel-heading form {
     display: inline
 }
+
+.manufacturer-panel .panel-heading .btn-primary:focus {
+    border-color: transparent;
+}
+
+.manufacturer-panel .panel-footer {
+    background-color: #888888;
+}
+
+.manufacturer-panel .panel-collapse li {
+    background-color: lightgray;
+    color: black;
+    font-size: 1.2em;
+}
+
+
+/*Customer part of work orders*/
+#customer-name-button {
+    font-size: 2em;
+    color: cornflowerblue;
+    border-color: cornflowerblue;
+}
+
+#email-list li {
+    background-color: #3582ff;
+    color: white;
+}
+
+#phone-list li {
+    color: #3c763d;
+    border-color: #3c763d;
+    background-color: white;
+}
+
+#shipping-content {
+    background-color: #edf8ff;
+    color: #1c5775;
+    border: 1px solid #1c5775;
+}
+
+
+/*Rest of work order detail styling*/
+#details-display i{
+    text-decoration: underline;
+}
+
+.order-devices{
+    background-color: lightgray;
+}
+
+.order-devices .text-areas{
+    background-color: lightgray;
+    padding-bottom: 20px;
+}
+
+.device-password {
+    padding: 2px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    border: 2px solid #777777;
+    background-color: #f2f2f2;
+    color: black;
+}
+
+.provider {
+    padding: 2px 10px;
+    border-radius: 5px;
+    border: 2px solid darkgrey;
+    background-color: #f2f2f2;
+    color: black;
+}
+
+#status-select{
+    margin-right: 10px;
+}
+
+.device-status{
+    margin-right: 10px;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+/*Status Colors*/
+.status-created {
+    border: 1px solid lightgray;
+    background-color: white;
+    color: black;
+}
+
+.status-paid {
+    border: 1px solid #89c491;
+    background-color: #e8ffeb;
+    color: #198e38;
+}
+
+.status-complete {
+    border: 1px solid #999999;
+    background-color: #a8a8a8;
+    color: white;
+}
+
+.device-status-created {
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+}
+
+.device-status-diagnosed {
+    border: 1px solid #bc4500;
+    background-color: #fff53d;
+    color: #bc4500;
+}
+
+.device-status-beingfix {
+    border: 1px solid #0a69fc;
+    background-color: #4cc0ff;
+    color: #00307a;
+}
+
+.device-status-repaired {
+    border: 1px solid #17b217;
+    background-color: #30ba30;
+    color: white;
+}
+
+.device-status-notfix {
+    border: 1px solid darkred;
+    background-color: red;
+    color: white;
+}
+
+.device-status-picked {
+    border: 1px solid #444444;
+    background-color: #999999;
+    color: white;
+}
+
 
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */

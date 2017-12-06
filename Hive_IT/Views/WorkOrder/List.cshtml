@@ -69,7 +69,7 @@
 </div>
 <div><br /></div>
 <div class="clearfix">
-    <table class="table text-center table-bordered col-xs-12">
+    <table class="table text-center table-bordered col-xs-12" id="order-table">
         <thead>
             <tr>
               <th class="text-center">Work Order Number</th>
@@ -83,7 +83,7 @@
             @foreach (var item in Model)
             {
                <tr>
-                   <td><a asp-action="Details" asp-route-order="@item.OrderNumber">@item.OrderNumber</a></td>
+                   <td><a asp-action="Details" asp-route-order="@item.OrderNumber" class="btn order-button btn-sm">@item.OrderNumber</a></td>
                    <td><a href="@Url.Action("Profile", "Customer", new {id= item.CustomerID })">@item.CustomerName</a></td>
                    <td>@item.OrderStatus</td>
                    <td>@item.StatusDate</td>

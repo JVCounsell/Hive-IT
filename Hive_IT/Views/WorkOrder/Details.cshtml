@@ -1,25 +1,24 @@
 ﻿@model Hive_IT.Models.WorkOrders.OrderViewModel
 @{
     ViewData["Title"] = "Work Order Details";
-    //TODO: Figure out style of details page
 }
 
-<div class="text-center details-display">
+<div class="text-center" id="details-display">
     @if (User.IsInRole("Admin"))
-    {
+     {
         <div class="clearfix pull-right">
             @using (Html.BeginForm("delete", "workorder", new { orderNumber = Model.OrderNumber }))
-            {
+             {
                 @Html.AntiForgeryToken()
 
                 <button type="submit" class="btn btn-delete col-xs-12" formnovalidate value="DELETE"
                         onclick="return confirm('Delete this order? This order and all devices will be lost forever!')">
                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete Order
                 </button>
-            }
+             }
 
         </div>
-    }   
+     }   
     <br />
     <div class="clearfix">
         <a class="btn btn-primary clearfix pull-left" asp-action="List">
@@ -34,7 +33,8 @@
     @if (Model.Status == "Complete" && !User.IsInRole("Admin"))
     {       
         <label asp-for="Status"></label>
-        <input type="text"  class="text-center" disabled asp-for="Status" asp-items="@Model.StatusList" />
+        <input type="text"  class="text-center" disabled
+               asp-for="Status" asp-items="@Model.StatusList" style="margin-bottom: 16px" />
         <b>Last Updated &#64 </b>@Model.StatusChangedAt
     }
     else
@@ -53,44 +53,75 @@
     }
    
    
-    <br />
-    <a href="@Url.Action("Profile", "Customer", new {id= Model.CustomerID })">@Model.CustomerName</a>
-    <p>Phone numbers: </p>
-    @foreach (var phone in Model.Phones)
-    {
-        <p>@phone.PhoneNumber</p>
-    }
-    <p>Emails: </p>
-    @foreach (var email in Model.Emails)
-    {
-        <p>@email.Email</p>
-    }
-    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#Shipping">Show Shipping Information</button>
-    
-    <div><br /></div>
+    <div class="panel panel-default" id="order-customer">
+        <div class="panel-heading">
+            <a class="btn btn-default" id="customer-name-button" href="@Url.Action("Profile", "Customer", new {id= Model.CustomerID })">
+            @Model.CustomerName</a><br />
+            <div class="clearfix col-xs-6">
+                <label>Phone numbers: </label>
+                <ul class="list-group" id="phone-list">
+                    @foreach (var phone in Model.Phones)
+                     {
+                        <li class="list-group-item">@phone.PhoneNumber</li>
+                     }
+                </ul>
+            </div>
+            <div class="clearfix col-xs-6">
+                <label>Emails: </label>
+                <ul class="list-group" id="email-list">
+                    @foreach (var email in Model.Emails)
+                     {
+                        <li class="list-group-item">@email.Email</li>
+                     }
+                </ul>
+            </div>
 
-    <div id="Shipping" class="collapse" role="dialog">
-        <div id="shipping-content">
-            <div class="bg-info clearfix">
-                @foreach (var address in Model.ShippingAddresses)
-                {
-                    <p class="col-xs-6"><b>St:</b> @address.StreetAddress</p>
-                    <p class="col-xs-3"><b>City:</b> @address.City</p>
-                    <p class="col-xs-3"><b>Prov/State:</b> @address.ProvState</p>
-                    <p class="col-xs-6"><b>Country:</b> @address.Country</p>
-                    <p class="col-xs-6"><b>Zip/Postal:</b> @address.Postal</p>
-                }
+            <div><br /></div>
+            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#Shipping">Show Shipping Information</button>
+
+            <div><br /></div>
+
+            <div id="Shipping" class="collapse" role="dialog">
+                <div id="shipping-content">
+                    <div class="clearfix">
+                        @foreach (var address in Model.ShippingAddresses)
+                        {
+                            <div>
+                                <p class="col-xs-4"><b>St:</b> @address.StreetAddress</p>
+                                <p class="col-xs-4"><b>City:</b> @address.City</p>
+                                <p class="col-xs-4"><b>Prov/State:</b> @address.ProvState</p>
+                                <p class="col-xs-6"><b>Country:</b> @address.Country</p>
+                                <p class="col-xs-6"><b>Zip/Postal:</b> @address.Postal</p>
+                            </div>                           
+                         }
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <br /><hr />
-    
+    <hr />
+
     @foreach (var device in Model.LinkedDevices)
     {
-
-        if (!User.IsInRole("Admin"))
-        {
-            if (Model.Status != "Complete" && device.Status != "Picked Up")
+        <div class="order-devices">
+            @if (!User.IsInRole("Admin"))
+            {
+                if (Model.Status != "Complete" && device.Status != "Picked Up")
+                {
+                    <div class="clearfix">
+                        <a asp-action="Update" asp-route-deviceNumber="@device.DeviceId" class="btn btn-info pull-right">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Update Device
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        <br />
+                    </div>
+                }
+            }
+            else
             {
                 <div class="clearfix">
                     <a asp-action="Update" asp-route-deviceNumber="@device.DeviceId" class="btn btn-info pull-right">
@@ -98,36 +129,52 @@
                     </a>
                 </div>
             }
-            else
-            {
-                <div>
-                    <br />
-                </div>
-
-            }
-        }
-        else
-        {               
-            <div class="clearfix">
-                <a asp-action="Update" asp-route-deviceNumber="@device.DeviceId" class="btn btn-info pull-right">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Update Device
-                </a>
-            </div>
-         }
 
 
-        <h2 style="display: inline-block">@device.Manufacturer @device.Model SN: @device.Serial</h2>
-        <p><b>Status:</b> @device.Status <b>Last updated &#64 </b>@device.StatusLastUpdatedAt</p><br />
-        <p>Password: @device.Password Provider: @device.Provider</p><br />
-        <label asp-for="@device.Problem"></label>
-        <textarea readonly class="col-xs-12 text-center" rows="3">@device.Problem</textarea>
-        <br />
-        <label asp-for="@device.Notes"></label>
-        <textarea readonly class="col-xs-12 text-center" rows="5">@device.Notes</textarea>
-        <div class="clearfix col-xs-12">
-            <br /><hr />
+            <h2 style="display: inline-block">@device.Manufacturer @device.Model <i>SN: @device.Serial</i></h2>
+            <p>
+                <b>Status:</b>
+                @switch (device.Status)
+                 {
+                    case "Diagnosed":
+                        <mark class="device-status device-status-diagnosed">@device.Status</mark>
+                        break;
+                    case "Being Repaired":
+                        <mark class="device-status device-status-beingfix">@device.Status</mark>
+                        break;
+                    case "Repaired":
+                        <mark class="device-status device-status-repaired">@device.Status</mark>
+                        break;
+                    case "Not Fixable":
+                        <mark class="device-status device-status-notfix">@device.Status</mark>
+                        break;
+                    case "Picked Up":
+                        <mark class="device-status device-status-picked">@device.Status</mark>
+                         break;
+                    default:
+                        <mark class="device-status device-status-created">@device.Status</mark>
+                        break;
+                 }
+                <b>Last updated &#64 </b>@device.StatusLastUpdatedAt
+            </p>
+            <p>
+                <mark class="device-password"><b>Password:</b> @device.Password</mark> 
+                <b>Provider:</b> <mark class="provider">@device.Provider</mark>
+            </p>
+            <br />
+
+            <div class="clearfix col-xs-12 text-center text-areas">
+                <label asp-for="@device.Problem"></label>
+                <textarea readonly class="col-xs-12 text-center" rows="3">@device.Problem</textarea>
+                <br />
+                <label asp-for="@device.Notes"></label>
+                <textarea readonly class="col-xs-12 text-center" rows="5">@device.Notes</textarea>  
+            </div>                   
         </div>
 
+        <div class="clearfix col-xs-12" style="background-color: white">
+            <hr />
+        </div>
      }
 
     @if (!User.IsInRole("Admin") && Model.Status == "Complete")
@@ -135,8 +182,7 @@
         <div class="clearfix">
             <br />
         </div>
-
-    }
+     }
     else
     {
         <div class="clearfix">

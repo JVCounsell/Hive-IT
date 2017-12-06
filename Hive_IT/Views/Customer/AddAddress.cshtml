@@ -17,49 +17,40 @@
         </div>
         <div class="panel-footer">Created: @Model.Creation.ToString("D")</div>
     </div>
-    <br />
 
-    @{
-        if (Model.Phones.Any())
+    <ul class="list-group col-xs-6 clearfix" id="customer-phone-list">
+        <li class="list-group-item clearfix">
+            Phonenumbers:
+        </li>
+        @foreach (var phone in Model.Phones)
         {
-            <div class="panel-group text-center">
-                @foreach (var phone in Model.Phones)
-                {
-                    @Html.Partial("_ViewPhone", phone)
-                }
-            </div>
+            @Html.Partial("_ViewPhone", phone)
         }
+    </ul>
 
-        if (Model.Emails.Any())
+    <ul class="list-group col-xs-6 clearfix" id="customer-email-list">
+        <li class="list-group-item clearfix">
+            Email Addresses:
+        </li>
+        @foreach (var email in Model.Emails)
         {
-            <div class="panel-group text-center">
-                @foreach (var email in Model.Emails)
-                {
-                    @Html.Partial("_ViewEmail", email)
-                }
-            </div>
-        }
+            @Html.Partial("_ViewEmail", email)
+        }        
+    </ul>
 
-        if (Model.Addresses.Any())
+    <ul class="list-group col-xs-12 clearfix" id="customer-address-list">
+        <li class="list-group-item clearfix">
+            Mailing Addresses:
+        </li>
+        @foreach (var address in Model.Addresses)
         {
-            <div class="panel-group text-center">
-                @foreach (var address in Model.Addresses)
-                {
-                    @Html.Partial("_ViewAddress", address)
-                }
-
-                @Html.Partial("_AddAddress", Model.AlterAddress)
-            </div>
+            @Html.Partial("_ViewAddress", address)
         }
-        else
-        {
-            <div class="panel-group text-center">              
-                @Html.Partial("_AddAddress", Model.AlterAddress)
-            </div>
+        @Html.Partial("_AddAddress", Model.AlterAddress)
+    </ul>
 
-        }
-    }
     <div>
         <br /><br />
     </div>
 </div>
+

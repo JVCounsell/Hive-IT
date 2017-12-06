@@ -27,31 +27,31 @@
             <span asp-validation-for="Model" class="field-validation-error"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group col-xs-6">
             <label asp-for="Password"></label>
             <input type="text" asp-for="Password" class="form-control" />
             <span asp-validation-for="Password" class="field-validation-error"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group col-xs-6">
             <label asp-for="Provider"></label>
             <input type="text" asp-for="Provider" class="form-control" />
             <span asp-validation-for="Provider" class="field-validation-error"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group col-xs-12">
             <label asp-for="Serial"></label>
             <input type="text" asp-for="Serial" class="form-control" />
             <span asp-validation-for="Serial" class="field-validation-error"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group col-xs-12">
             <label asp-for="Problem"></label>
             <textarea asp-for="Problem" class="form-control" rows="5"></textarea>
             <span asp-validation-for="Problem" class="field-validation-error"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group col-xs-12">
             <label asp-for="Notes"></label>
             <textarea asp-for="Notes" class="form-control" rows="5"></textarea>
         </div>
@@ -59,7 +59,7 @@
         @Html.HiddenFor(model => model.WorkOrderNumber)
         @Html.Hidden("order", Model.WorkOrderNumber)
 
-        <div class="clearfix">
+        <div class="clearfix col-xs-12">
             <label>&nbsp;</label>
             <button type="submit" class="btn btn-primary pull-left"> Create</button>
 

@@ -1,31 +1,28 @@
 ﻿@model Hive_IT.Data.CustomerAddress
 
-<div class="panel panel-customer-address">
-    <div class="panel-heading">
-        @if (Model.StreetAddress != null)
-        {
-            <b>St: </b>@Model.StreetAddress
-        }
+<li class="list-group-item clearfix">
+    @if (Model.StreetAddress != null)
+    {
+        <b>St: </b>@Model.StreetAddress
+    }
 
-        @if (Model.City != null)
-        {
-            <b>City: </b>@Model.City
-        }
+    @if (Model.City != null)
+    {
+        <b>City: </b>@Model.City
+    }
 
-        @if (Model.ProvState != null)
-        {
-            <b>Pr/St: </b>@Model.ProvState
-        }
+    @if (Model.ProvState != null)
+    {
+        <b>Pr/St: </b>@Model.ProvState
+    }
 
-        @if (Model.Country != null)
-        {
-            <b>Country: </b>@Model.Country
-        }
+    @if (Model.Country != null)
+    {
+        <b>Country: </b>@Model.Country
+    }
 
-        @if (Model.Postal != null)
-        {
-            <b>Postal/Zip: </b>@Model.Postal
-        }        
-    </div>
-
-</div>           
+    @if (Model.Postal != null)
+    {
+        <b>Postal/Zip: </b>@Model.Postal
+    }   
+</li>   

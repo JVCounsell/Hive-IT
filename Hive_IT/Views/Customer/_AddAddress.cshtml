@@ -1,58 +1,54 @@
 ﻿@model Hive_IT.Data.CustomerAddress
 
-<div class="panel panel-customer-address">
-    <div class="panel-heading">
-        <fieldset>
-            <form asp-action="AddAddress" role="form">
-                @Html.AntiForgeryToken()
+<li class="list-group-item clearfix">
+    <fieldset>
+        <form asp-action="AddAddress" role="form">
+            @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="All" class="input-validation-error"></div>
+            <div asp-validation-summary="All" id="input-validation-error"></div>
 
-                <div class="form-group col-sm-6">
-                    <label asp-for="StreetAddress"></label>
-                    <input type="text" asp-for="StreetAddress" class="form-control" />
-                    <span asp-validation-for="StreetAddress" class="field-validation-error"></span>
-                </div>
+            <div class="form-group col-sm-6">
+                <label asp-for="StreetAddress"></label>
+                <input type="text" asp-for="StreetAddress" class="form-control" />
+                <span asp-validation-for="StreetAddress" class="field-validation-error"></span>
+            </div>
 
-                <div class="form-group col-sm-6">
-                    <label asp-for="City"></label>
-                    <input type="text" asp-for="City" class="form-control" />
-                    <span asp-validation-for="City" class="field-validation-error"></span>
-                </div>
+            <div class="form-group col-sm-6">
+                <label asp-for="City"></label>
+                <input type="text" asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="field-validation-error"></span>
+            </div>
 
-                <div class="form-group col-sm-4">
-                    <label asp-for="ProvState"></label>
-                    <input type="text" asp-for="ProvState" class="form-control" />
-                    <span asp-validation-for="ProvState" class="field-validation-error"></span>
-                </div>
+            <div class="form-group col-sm-4">
+                <label asp-for="ProvState"></label>
+                <input type="text" asp-for="ProvState" class="form-control" />
+                <span asp-validation-for="ProvState" class="field-validation-error"></span>
+            </div>
 
-                <div class="form-group col-sm-4">
-                    <label asp-for="Country"></label>
-                    <input type="text" asp-for="Country" class="form-control" />
-                    <span asp-validation-for="Country" class="field-validation-error"></span>
-                </div>
+            <div class="form-group col-sm-4">
+                <label asp-for="Country"></label>
+                <input type="text" asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="field-validation-error"></span>
+            </div>
 
-                <div class="form-group col-sm-4">
-                    <label asp-for="Postal"></label>
-                    <input type="text" asp-for="Postal" class="form-control" />
-                    <span asp-validation-for="Postal" class="field-validation-error"></span>
-                </div>
+            <div class="form-group col-sm-4">
+                <label asp-for="Postal"></label>
+                <input type="text" asp-for="Postal" class="form-control" />
+                <span asp-validation-for="Postal" class="field-validation-error"></span>
+            </div>
 
-                @Html.HiddenFor(v => v.CustomerId)
+            @Html.HiddenFor(v => v.CustomerId)
 
-                <div>
-                    <label>&nbsp;</label>
-                    <button type="submit" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Mailing Address
-                    </button>
-                </div>
+            <div class="clearfix">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Mailing Address
+                </button>
 
-                <div class="clearfix">
-                    <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CustomerId">
-                        <span class="glyphicon glyphicon-stop"></span> Cancel
-                    </a>
-                </div>
-            </form>
-        </fieldset>
-    </div>
-</div>
+                <a class="btn btn-danger pull-right" asp-action="Profile" asp-route-id="@Model.CustomerId">
+                    <span class="glyphicon glyphicon-stop"></span> Cancel
+                </a>
+            </div>
+        </form>
+    </fieldset>
+</li>

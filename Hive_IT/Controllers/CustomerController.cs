@@ -130,8 +130,7 @@ namespace Hive_IT.Controllers
 
             return View(profile);
         }
-
-        //TODO: Once style and form for profile is changed and settled follow suit with other actions and views
+        
         [HttpGet]
         public IActionResult EditNameProfile(long id)
         {
@@ -567,7 +566,7 @@ namespace Hive_IT.Controllers
                 {
                     var sendBack = FillEditPhone(requested, edited);
                     if (!ModelState.IsValid)
-                    {
+                    {                        
                         return View(sendBack);
                     }
 
@@ -630,36 +629,32 @@ namespace Hive_IT.Controllers
             {
                 AlterAddress = editAdd
             };
-
-            //make sure there is an attatched address to the customer
-            if (_db.MailingAddresses.Any(m => m.CustomerId == id))
+                       
+            //find the address with the associated address id
+            var requestedAddress = _db.MailingAddresses.FirstOrDefault(m => m.AddressId == ml);
+            if (requestedAddress == null)
             {
-                //if there is find the one with the associated address id
-                var requestedAddress = _db.MailingAddresses.FirstOrDefault(m => m.AddressId == ml);
-                if (requestedAddress == null)
-                {
-                    return RedirectToAction("Profile", "Customer", new { id = id });
-                }
-                else
-                {
-                    var sendBack = FillEditAddress(requested, edited);
-                    if (!ModelState.IsValid)
-                    {
-                        return View(sendBack);
-                    }
-
-                    var checkedAddress = AnyAddressFieldsFilled(editAdd);
-                    if (checkedAddress != null)
-                    {
-                        requestedAddress.City = checkedAddress.City;
-                        requestedAddress.Country = checkedAddress.Country;
-                        requestedAddress.Postal = checkedAddress.Postal;
-                        requestedAddress.ProvState = checkedAddress.ProvState;
-                        requestedAddress.StreetAddress = checkedAddress.StreetAddress;
-                        _db.SaveChanges();
-                    }
-                }
+                return RedirectToAction("Profile", "Customer", new { id = id });
             }
+            else
+            {
+                var sendBack = FillEditAddress(requested, edited);
+                if (!ModelState.IsValid)
+                {
+                    return View(sendBack);
+                }
+
+                var checkedAddress = AnyAddressFieldsFilled(editAdd);
+                if (checkedAddress != null)
+                {
+                    requestedAddress.City = checkedAddress.City;
+                    requestedAddress.Country = checkedAddress.Country;
+                    requestedAddress.Postal = checkedAddress.Postal;
+                    requestedAddress.ProvState = checkedAddress.ProvState;
+                    requestedAddress.StreetAddress = checkedAddress.StreetAddress;
+                    _db.SaveChanges();
+                }
+            }            
 
             return RedirectToAction("Profile", "Customer", new { id = id });
         }
