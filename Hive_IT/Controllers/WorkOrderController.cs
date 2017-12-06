@@ -211,6 +211,17 @@ namespace Hive_IT.Controllers
                 }                
             }
 
+            //if there are no manufaturers in db, return to a view that says this, can make work orders without them
+            if (_db.Manufacturers.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+            //if there are no models in db, code still functions on page, but better to gice the warning
+            if (_db.DeviceModels.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+
             //conversion of string to select list item to use in select element
             var listOfStatuses = new List<SelectListItem>();
             foreach(var status in deviceStatuses)
@@ -218,7 +229,7 @@ namespace Hive_IT.Controllers
                 var statusItem = new SelectListItem {Value= status, Text=status };
                 listOfStatuses.Add(statusItem);
             }
-
+            
             var model = new DeviceViewModel
             {
                 DeviceNumber = update.DeviceId,
@@ -256,6 +267,18 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("Details", "WorkOrder", new { order = update.WorkOrderNumber });
             }
 
+            //if there are no manufaturers in db, return to a view that says this, can make work orders without them,
+            //should not happen in a post but just for security
+            if (_db.Manufacturers.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+            //if there are no models in db, code still functions on page, but better to gice the warning
+            if (_db.DeviceModels.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+
             //reinitializing to use in case needs to return model
             var listOfStatuses = new List<SelectListItem>();
             foreach (var status in deviceStatuses)
@@ -264,6 +287,7 @@ namespace Hive_IT.Controllers
                 listOfStatuses.Add(statusItem);
             }
             updatedModel.StatusList = listOfStatuses;
+           
             updatedModel.Manufacturers = GenerateManufacturerList();
             updatedModel.Models = GenerateModelList(update.Manufacturer);
 
@@ -334,6 +358,17 @@ namespace Hive_IT.Controllers
                 return RedirectToAction("List", "Customer");
             }
 
+            //if there are no manufaturers in db, return to a view that says this, can make work orders without them
+            if (_db.Manufacturers.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+            //if there are no models in db, code still functions on page, but better to gice the warning
+            if (_db.DeviceModels.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+
             var toAdd = new AddDeviceViewModel {
                 Manufacturers = GenerateManufacturerList(),
                 Models = GenerateModelList()
@@ -351,6 +386,18 @@ namespace Hive_IT.Controllers
             if (_db.Customers.FirstOrDefault(c => c.CustomerId == id) == null)
             {
                 return RedirectToAction("List", "Customer");
+            }
+
+            //if there are no manufaturers in db, return to a view that says this, can make work orders without them,
+            //should not happen in a post but just for security
+            if (_db.Manufacturers.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+            //if there are no models in db, code still functions on page, but better to gice the warning
+            if (_db.DeviceModels.Any() == false)
+            {
+                return View("NoManufacturers");
             }
 
             //reassignment in case model is invalid
@@ -393,6 +440,16 @@ namespace Hive_IT.Controllers
             {
                 return RedirectToAction(nameof(List));
             }
+            //if there are no manufaturers in db, return to a view that says this, can make work orders without them
+            if (_db.Manufacturers.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+            //if there are no models in db, code still functions on page, but better to gice the warning
+            if (_db.DeviceModels.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
 
             var newDevice = new AddDeviceViewModel {
                 WorkOrderNumber = order,
@@ -413,6 +470,17 @@ namespace Hive_IT.Controllers
             {
                 return RedirectToAction(nameof(List));
             }
+            //if there are no manufaturers in db, return to a view that says this, can make work orders without them,
+            //should not happen in a post but just for security
+            if (_db.Manufacturers.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
+            //if there are no models in db, code still functions on page, but better to gice the warning
+            if (_db.DeviceModels.Any() == false)
+            {
+                return View("NoManufacturers");
+            }
 
             created.Manufacturers = GenerateManufacturerList();
             created.Models = GenerateModelList();
@@ -427,7 +495,7 @@ namespace Hive_IT.Controllers
             _db.Devices.Add(createdDevice);
             _db.SaveChanges();
 
-            return RedirectToAction("Details", "WorkOrder", new { order = order });
+            return RedirectToAction("Details", "WorkOrder", new { order });
 
         }
 
@@ -500,6 +568,11 @@ namespace Hive_IT.Controllers
         {
             var models = new List<ModelofDevice>();
             if (manufacturer == null)
+            {
+                int manufacturerId = _db.Manufacturers.OrderBy(manu => manu.ManufacturerName).FirstOrDefault().ManufacturerId;
+                models = _db.DeviceModels.Where(mod => mod.ManufacturerId == manufacturerId).OrderBy(mod => mod.Model).ToList();
+            }
+            else if (_db.Manufacturers.FirstOrDefault(manu => manu.ManufacturerName == manufacturer) == null)
             {
                 int manufacturerId = _db.Manufacturers.OrderBy(manu => manu.ManufacturerName).FirstOrDefault().ManufacturerId;
                 models = _db.DeviceModels.Where(mod => mod.ManufacturerId == manufacturerId).OrderBy(mod => mod.Model).ToList();

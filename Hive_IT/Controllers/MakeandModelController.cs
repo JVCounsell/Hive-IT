@@ -248,8 +248,9 @@ namespace Hive_IT.Controllers
             }
 
             _db.Remove(toDelete);
+            _db.SaveChanges();
 
-            return View();            
+            return RedirectToAction("");            
         }
 
 
@@ -265,8 +266,9 @@ namespace Hive_IT.Controllers
             }
                        
             _db.Remove(toDelete);
+            _db.SaveChanges();
 
-            return View();
+            return RedirectToAction("");
         }               
     }
 }
