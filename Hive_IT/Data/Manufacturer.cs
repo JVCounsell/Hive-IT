@@ -10,6 +10,7 @@ namespace Hive_IT.Data
     {
         public int ManufacturerId { get; set; }
 
+        [Required]
         [Display(Name = "Manufacturer Name")]
         public string ManufacturerName { get; set; }
 

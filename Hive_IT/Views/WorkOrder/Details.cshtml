@@ -51,7 +51,7 @@
             <input hidden id="order-number" value="@Model.OrderNumber"/>
         </form>        
     }
-   
+   <a class="btn btn-default clearfix text-center" id="history-button" asp-action="History" asp-route-order="@Model.OrderNumber">Order History</a>
    
     <div class="panel panel-default" id="order-customer">
         <div class="panel-heading">

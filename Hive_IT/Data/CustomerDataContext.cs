@@ -16,6 +16,7 @@ namespace Hive_IT.Data
         public DbSet<Device> Devices { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<ModelofDevice> DeviceModels { get; set; }
+        public DbSet<WorkOrderHistory> Histories { get; set; }
 
         
         public CustomerDataContext(DbContextOptions<CustomerDataContext> options): base(options)

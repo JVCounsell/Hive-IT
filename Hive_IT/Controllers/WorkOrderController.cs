@@ -10,6 +10,7 @@ using Hive_IT.Models.WorkOrders;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hive_IT.Controllers
 {
@@ -17,6 +18,7 @@ namespace Hive_IT.Controllers
     public class WorkOrderController : Controller
     {
         private readonly CustomerDataContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
         //ex. 1:30 PM Friday, Dec 1, 2017
         private readonly string timeFormat = "h:mm tt dddd, MMMM d, yyyy";
         private readonly string numberFormat = "yyMMddHHmmss";
@@ -26,9 +28,10 @@ namespace Hive_IT.Controllers
             "Created", "Diagnosed", "Being Repaired", "Repaired", "Not Fixable", "Picked Up"
         };
        
-        public WorkOrderController(CustomerDataContext db)
+        public WorkOrderController(CustomerDataContext db, UserManager<ApplicationUser> userManager)
         {
-            _db = db;           
+            _db = db;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -150,7 +153,7 @@ namespace Hive_IT.Controllers
         //will be an ajax call to get this, return bool for whether action is successfully changing or not
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public bool Details(string order, string Status)
+        public async Task<bool> Details(string order, string Status)
         {
             // Find associated work order, if it doesn't exist redirect to list of orders 
             var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order);
@@ -182,14 +185,221 @@ namespace Hive_IT.Controllers
                     break;
             }
 
-            //check to see if the status is updated and if so change corresponding field
+            //check to see if the status is updated and if so change corresponding field and update history
             if (initialStatus != workOrder.Status)
             {
                 workOrder.StatusLastUpdatedAt = DateTime.Now.ToString(timeFormat);
-            }
+
+                // grab the Application User by the current user's username so UserId can be grabbed
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                var History = new WorkOrderHistory
+                {
+                    ActionTaken = "Updated Status",
+                    FieldValueBefore = initialStatus,
+                    FieldValueAfter = workOrder.Status,
+                    WorkOrderNumber= workOrder.WorkOrderNumber,
+                    Username = User.Identity.Name,
+                    UserId = user.Id,
+                    TimeOfAction = DateTime.Now.ToString(timeFormat),
+                    HistoryID = DateTime.Now.ToString(numberFormat + "fff")
+                };
+
+                _db.Histories.Add(History);
+            }           
 
             _db.SaveChanges();
             return true;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> History(string order)
+        {
+            // Find associated work order, if it doesn't exist redirect to list of orders             
+            if (_db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order) == null)
+            {
+                return RedirectToAction(nameof(List));
+            }
+
+            ViewBag.OrderNumber = order;
+
+            //find all histories linked to the work order
+            var histories = _db.Histories.Where(his => his.WorkOrderNumber == order);
+
+            /*
+             * ******************* Done to limit frequent Trips to database ******************************
+             */
+            //all unique user ids in the associated histories
+            var allUniqueUserIds = new List<string>();
+            if (histories.Any())
+            {
+                foreach (var history in histories)
+                {
+                    //if there is no entries in count add first histories user id to list
+                    if (allUniqueUserIds.Count == 0)
+                    {
+                        allUniqueUserIds.Add(history.UserId);
+                    }
+                    else
+                    {
+                        //otherwise see if the histories id exists in list
+                        if (!allUniqueUserIds.Exists(id => id == history.UserId))
+                        {
+                            //if not add it
+                            allUniqueUserIds.Add(history.UserId);
+                        }
+                    }
+                }
+            }
+
+            //creation of a dictionary that will display the username of the Id
+            var userDictionary = new Dictionary<string, string>();
+
+            //but will check if allUniqueUserIds has at least one value otherwise it is pointless
+            if(allUniqueUserIds.Count > 0)
+            {
+                foreach (var userID in allUniqueUserIds)
+                {
+                    // check to see if there is a user in the database with the saved id (won't be if they are deleted)
+                    var selectedUser = await _userManager.FindByIdAsync(userID);
+
+                    if (selectedUser != null)
+                    {
+                        //if user is still in database assign the username to the userID in the dictionary
+                       userDictionary.Add(userID , selectedUser.UserName);
+                    }
+                    else
+                    {
+                        //assign a Notification string that specifies the user is no longer in the database
+                        userDictionary.Add(userID, "Removed");
+                    }
+                }
+            }
+
+            var allUniqueDeviceIds = new List<string>();
+            if (histories.Any())
+            {
+                foreach (var history in histories)
+                {
+                    //if there is no entries in count add first histories device id to list
+                    if (allUniqueDeviceIds.Count == 0)
+                    {
+                        //but only if it has a device id
+                        if(history.DeviceID != null)
+                        {
+                            allUniqueDeviceIds.Add(history.DeviceID);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        //but only if it has a device id
+                        if (history.DeviceID != null)
+                        {
+                            if (!allUniqueDeviceIds.Exists(id => id == history.DeviceID))
+                            {
+                                //if not add it
+                                allUniqueDeviceIds.Add(history.DeviceID);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }                        
+                        else
+                        {
+                            continue;
+                        }                       
+                    }
+                }
+            }
+
+            //creation of a dictionary that will display the identifier of the device (Details action style format)
+            var deviceDictionary = new Dictionary<string, string>();
+
+            //but will check if allUniqueDeviceIds has at least one value otherwise it is pointless
+            if (allUniqueDeviceIds.Count > 0)
+            {
+                foreach (var devID in allUniqueDeviceIds)
+                {
+                    //check to see if device still exists
+                    var selectedDevice = _db.Devices.FirstOrDefault(dev => dev.DeviceId == devID);
+
+                    if (selectedDevice != null)
+                    {
+                        //if device is still in database assign the username to the userID in the dictionary
+                        deviceDictionary.Add(devID, selectedDevice.Manufacturer + " " + selectedDevice.Model + " SN: " + selectedDevice.Serial);
+                    }
+                    else
+                    {
+                        //assign a Notification string that specifies the Device is no longer in the database
+                        deviceDictionary.Add(devID, "Removed");
+                    }
+                }
+            }
+            /*
+             * *************************************************************************
+             */
+
+            //creation of a empty set of the view models to be shown
+            var historiesViewModel = new List<HistoryViewModel>();
+            //make sure there are entries in the database (always should be)
+            if (histories.Any())
+            {
+                foreach (var history in histories)
+                {
+                    //assignment to viewmodel for ease of display
+                    var historyModel = new HistoryViewModel
+                    {
+                        HistId = history.HistoryID,
+                        WorkOrderNumber = history.WorkOrderNumber,
+                        ActionTaken = history.ActionTaken,
+                        TimeOfAction = history.TimeOfAction,
+                        FieldValueBefore = history.FieldValueBefore,
+                        FieldValueAfter = history.FieldValueAfter,
+                        DeviceID = history.DeviceID
+                    };
+
+                    string userIdentity = userDictionary[history.UserId];
+
+                    if (userIdentity != "Removed")
+                    {
+                        //if user is still in database assign the variable to the username currently being used
+                        historyModel.Username = userIdentity;
+                    }
+                    else
+                    {
+                        //assign to the saved username so people have some semblance of who performed the task
+                        historyModel.Username = history.Username;
+                    }
+
+                    //in case device id exists
+                    if (history.DeviceID != null)
+                    {
+                        string deviceName = deviceDictionary[history.DeviceID];
+                        if (deviceName != "Removed")
+                        {
+                            //create a identity based on current manufacturer, model and device like in Details
+                            historyModel.DeviceSerialIdentifier = deviceName;
+                            historyModel.IsDeviceActive = true;
+                        }
+                        else
+                        {
+                            //set the identity to what was saved in database as a understandable identification
+                            historyModel.DeviceSerialIdentifier = history.DeviceIdentity;
+                            historyModel.IsDeviceActive = false;
+                        }
+                    }
+
+                    historiesViewModel.Add(historyModel);
+                }
+            }
+            //sort latest first
+            historiesViewModel = historiesViewModel.OrderByDescending(his => his.TimeOfAction).ThenByDescending(his => his.HistId).ToList();
+               
+            return View(historiesViewModel);
         }
 
         [HttpGet]
@@ -253,7 +463,7 @@ namespace Hive_IT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Update(string deviceNumber, DeviceViewModel updatedModel)
+        public async Task<IActionResult> Update(string deviceNumber, DeviceViewModel updatedModel)
         {
             //find device to update
             var update = _db.Devices.FirstOrDefault(o => o.DeviceId == deviceNumber);
@@ -296,13 +506,76 @@ namespace Hive_IT.Controllers
                 return View(updatedModel);
             }
 
-            //reassignment block
+            //reassignment block, check whether each field is updated, and each that is create a history for
+            if (update.Manufacturer != updatedModel.Manufacturer)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Manufacturer";
+                history.FieldValueBefore = update.Manufacturer;
+                history.FieldValueAfter = updatedModel.Manufacturer;
+
+                _db.Histories.Add(history);
+            }
             update.Manufacturer = updatedModel.Manufacturer;
+            if (update.Model != updatedModel.Model)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Model";
+                history.FieldValueBefore = update.Model;
+                history.FieldValueAfter = updatedModel.Model;
+
+                _db.Histories.Add(history);
+            }
             update.Model = updatedModel.Model;
+            if (update.Serial != updatedModel.Serial)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Serial";
+                history.FieldValueBefore = update.Serial;
+                history.FieldValueAfter = updatedModel.Serial;
+
+                _db.Histories.Add(history);
+            }
             update.Serial = updatedModel.Serial;
+            if (update.Password != updatedModel.Password)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Password";
+                history.FieldValueBefore = update.Password;
+                history.FieldValueAfter = updatedModel.Password;
+
+                _db.Histories.Add(history);
+            }
             update.Password = updatedModel.Password;
+            if (update.Provider != updatedModel.Provider)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Provider";
+                history.FieldValueBefore = update.Provider;
+                history.FieldValueAfter = updatedModel.Provider;
+
+                _db.Histories.Add(history);
+            }
             update.Provider = updatedModel.Provider;
+            if (update.Problem != updatedModel.Problem)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Problem";
+                history.FieldValueBefore = update.Problem;
+                history.FieldValueAfter = updatedModel.Problem;
+
+                _db.Histories.Add(history);
+            }
             update.Problem = updatedModel.Problem;
+            if (update.Notes != updatedModel.Notes)
+            {
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Notes";
+                history.FieldValueBefore = update.Notes;
+                history.FieldValueAfter = updatedModel.Notes;
+
+                _db.Histories.Add(history);
+            }
             update.Notes = updatedModel.Notes;
 
             //initialization for later check
@@ -337,10 +610,16 @@ namespace Hive_IT.Controllers
                     break;
             }
 
-            //check to see if the status is updated and if so change corresponding field
+            //check to see if the status is updated and if so change corresponding field and create history
             if (initialStatus != update.Status)
             {
                 update.StatusLastUpdatedAt = DateTime.Now.ToString(timeFormat);
+                var history = await GenerateBaseHistoryOnUpdation(update);
+                history.ActionTaken = "Updated Device Status";
+                history.FieldValueBefore = initialStatus;
+                history.FieldValueAfter = update.Status;
+
+                _db.Histories.Add(history);
             }
 
             _db.SaveChanges();
@@ -380,7 +659,7 @@ namespace Hive_IT.Controllers
         // id is customer id.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(long id, AddDeviceViewModel created)
+        public async Task<IActionResult> Create(long id, AddDeviceViewModel created)
         {
             // make sure there is a customer to associate work order to
             if (_db.Customers.FirstOrDefault(c => c.CustomerId == id) == null)
@@ -427,7 +706,16 @@ namespace Hive_IT.Controllers
             
             _db.Devices.Add(createdDevice);
             _db.SaveChanges();
-            
+
+            //creation of History with the generic function and filling in the applicable details after
+            var historyEntry = await GenerateBaseHistoryForDeviceWithoutUpdates(createdDevice, createdDevice.DeviceId);
+            historyEntry.ActionTaken = "Created Order and Device";
+            historyEntry.TimeOfAction = DateTime.Now.ToString(timeFormat);
+            historyEntry.HistoryID = DateTime.Now.ToString(numberFormat + "fff");
+
+            _db.Histories.Add(historyEntry);
+            _db.SaveChanges();
+
             return RedirectToAction("Details", "WorkOrder", new { order = created.WorkOrderNumber });
            
         }
@@ -462,7 +750,7 @@ namespace Hive_IT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Add(string order, AddDeviceViewModel created)
+        public async Task<IActionResult> Add(string order, AddDeviceViewModel created)
         {
             //make sure there is a workorder to connect to
             var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == order);
@@ -491,8 +779,17 @@ namespace Hive_IT.Controllers
             }
 
             var createdDevice = GenerateDeviceFromViewModel(created, workOrder.WorkOrderNumber);
-            
+                       
             _db.Devices.Add(createdDevice);
+            _db.SaveChanges();
+
+            //creation of History with the generic function and filling in the applicable details after
+            var historyEntry = await GenerateBaseHistoryForDeviceWithoutUpdates(createdDevice, createdDevice.DeviceId);
+            historyEntry.ActionTaken = "Created Device";
+            historyEntry.TimeOfAction = DateTime.Now.ToString(timeFormat);
+            historyEntry.HistoryID = DateTime.Now.ToString(numberFormat + "fff");
+
+            _db.Histories.Add(historyEntry);
             _db.SaveChanges();
 
             return RedirectToAction("Details", "WorkOrder", new { order });
@@ -521,7 +818,17 @@ namespace Hive_IT.Controllers
                 {
                     _db.Remove(device);
                 }
-            }                      
+            }
+
+            //on deletion of work orders, delete all History that is linked to it, check for security reason only
+            if (_db.Histories.Any(his => his.WorkOrderNumber == toDelete.WorkOrderNumber))
+            {
+                var linkedHistory = _db.Histories.Where(his => his.WorkOrderNumber == toDelete.WorkOrderNumber);
+                foreach (var history in linkedHistory)
+                {
+                    _db.Remove(history);
+                }
+            }
 
             _db.Remove(toDelete);
             _db.SaveChanges();
@@ -533,20 +840,74 @@ namespace Hive_IT.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteDevice(string deviceNumber)
+        public async  Task<IActionResult> DeleteDevice(string deviceNumber)
         {
             //find device to delete
             var toDelete = _db.Devices.FirstOrDefault(o => o.DeviceId == deviceNumber);
             if (toDelete == null)
             {
                 return RedirectToAction(nameof(List));
-            }            
+            }
 
+            //creation of History with the generic function and filling in the applicable details after
+            var deletionEntry = await GenerateBaseHistoryForDeviceWithoutUpdates(toDelete, deviceNumber);
+            deletionEntry.ActionTaken = "DELETED DEVICE";
+            deletionEntry.TimeOfAction = DateTime.Now.ToString(timeFormat);
+            deletionEntry.HistoryID = DateTime.Now.ToString(numberFormat + "fff");
+
+            _db.Histories.Add(deletionEntry);
             _db.Remove(toDelete);
             _db.SaveChanges();
 
             return RedirectToAction("Details", "WorkOrder", new {order = toDelete.WorkOrderNumber });
 
+        }
+
+        private async Task<WorkOrderHistory> GenerateBaseHistoryOnUpdation(Device updatedDevice)
+        {
+            // grab the Application User by the current user's username so UserId can be grabbed
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            //creation of a device identity that can be easily read in style of Details
+            var deviceIdentity = updatedDevice.Manufacturer + " " + updatedDevice.Model + " SN: " + updatedDevice.Serial;
+
+            //fill out the History fields that are common for all connected to a device
+            var HistoryEntry = new WorkOrderHistory
+            {
+                UserId = user.Id,
+                Username = User.Identity.Name,
+                DeviceID = updatedDevice.DeviceId,
+                DeviceIdentity = deviceIdentity,
+                WorkOrderNumber = updatedDevice.WorkOrderNumber,
+                HistoryID = DateTime.Now.ToString(numberFormat + "fff"),
+                TimeOfAction = DateTime.Now.ToString(timeFormat)
+            };
+            //added fffffff to this because computers are fast so to differentiate histories in situations when multiple entities
+            //are changed format to milliseconds
+
+            return HistoryEntry;
+        }
+
+        private async Task<WorkOrderHistory> GenerateBaseHistoryForDeviceWithoutUpdates(Device device, string deviceNumber)
+        {
+            
+            // grab the Application User by the current user's username so UserId can be grabbed
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            //creation of a device identity that can be easily read in style of Details
+            var deviceIdentity = device.Manufacturer + " " + device.Model + " SN: " + device.Serial;
+
+            //fill out the History fields that are common for all connected to a device
+            var HistoryEntry = new WorkOrderHistory
+            {
+                UserId = user.Id,
+                Username = User.Identity.Name,
+                DeviceID = deviceNumber,
+                DeviceIdentity = deviceIdentity,
+                WorkOrderNumber=device.WorkOrderNumber
+            };
+
+            return HistoryEntry;
         }
 
         private List<SelectListItem> GenerateManufacturerList()
@@ -591,7 +952,7 @@ namespace Hive_IT.Controllers
                 { Value= model.Model, Text = model.Model };
                 modelList.Add(listItem);
             }
-
+                        
             return modelList;
         }
 
@@ -631,10 +992,11 @@ namespace Hive_IT.Controllers
             {                
                 listOfModels.Add(linked.Model);
             }
-
+            
             //convert list to model, so that Json has a models key (better format imo)
             var models = new ModelNames { Models = listOfModels };
             return JsonConvert.SerializeObject(models);
+            
         }
     }
 }

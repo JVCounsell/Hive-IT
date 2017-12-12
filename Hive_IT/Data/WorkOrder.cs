@@ -21,6 +21,7 @@ namespace Hive_IT.Data
         public string StatusLastUpdatedAt { get; set; }
 
         public virtual ICollection<Device> Device { get; set; }
+        public virtual ICollection<WorkOrderHistory> History { get; set; }
 
         public long CustomerId { get; set; }
         public Customer Customer { get; set; }

@@ -4,7 +4,6 @@
 }
 
 body {    
-    padding-top: 50px;
     padding-bottom: 20px;
 }
 
@@ -358,6 +357,11 @@ thead {
 
 
 /*Rest of work order detail styling*/
+#history-button{
+    margin-bottom: 12px;
+    border-color: black;
+}
+
 #details-display i{
     text-decoration: underline;
 }
@@ -451,6 +455,87 @@ thead {
     border: 1px solid #444444;
     background-color: #999999;
     color: white;
+}
+
+/*Style for Work Oder History*/
+.history-create {
+    background-color: #007711;
+    color: white;
+    border: 1px solid #043300;
+}
+
+.history-create mark{
+    background-color: limegreen;
+    color: white;
+    border-bottom: 1px solid white;
+    border-radius: 5px;
+}
+
+.history-create i {
+    background-color: #00a818;
+    color: white;
+    text-decoration: underline;
+    border-radius: 3px;
+}
+
+.history-update {
+    background-color: lightgray;
+    color: black;
+    border: 1px solid #333333;
+}
+
+.history-update mark {
+    background-color: #777777;
+    color: white;
+    border-radius: 5px;
+    border-bottom: 1px solid black;
+}
+
+.history-update i {
+    background-color: darkgray;
+    color: black;
+    border-radius: 3px;
+   text-decoration:underline;
+}
+
+.history-delete {
+    color: white;
+    background-color: red;
+    border: 1px solid #600000;
+}
+
+.history-delete mark {
+    color: white;
+    background-color: #8c0000;
+    border-radius: 5px;
+    border-bottom: 1px solid white;
+}
+
+.history-delete i {
+    color: white;
+    background-color: #c90000;
+    border-radius: 3px;
+    text-decoration: underline;
+}
+
+.history-status-change {
+    background-color: #0061ff;
+    color: white;
+    border: 1px solid #002c75;
+}
+
+.history-status-change mark {
+    background-color: #0148bc;
+    color: white;
+    border-radius: 5px;
+    border-bottom: 1px solid white;
+}
+
+.history-status-change i {
+    background-color: #004fd1;
+    color: white;
+    border-radius: 3px;
+    text-decoration: underline;
 }
 
 

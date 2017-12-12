@@ -11,6 +11,7 @@ namespace Hive_IT.Data
         [Key]
         public int Identifier { get; set; }
 
+        [Required]
         public string Model { get; set; }
 
         public int ManufacturerId { get; set; }

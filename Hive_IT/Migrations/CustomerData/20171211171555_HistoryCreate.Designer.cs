@@ -11,9 +11,10 @@ using System;
 namespace Hive_IT.Migrations.CustomerData
 {
     [DbContext(typeof(CustomerDataContext))]
-    partial class CustomerDataContextModelSnapshot : ModelSnapshot
+    [Migration("20171211171555_HistoryCreate")]
+    partial class HistoryCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,8 +214,6 @@ namespace Hive_IT.Migrations.CustomerData
 
                     b.Property<string>("DeviceID");
 
-                    b.Property<string>("DeviceIdentity");
-
                     b.Property<string>("FieldValueAfter");
 
                     b.Property<string>("FieldValueBefore");
@@ -223,9 +222,6 @@ namespace Hive_IT.Migrations.CustomerData
                         .IsRequired();
 
                     b.Property<string>("UserId")
-                        .IsRequired();
-
-                    b.Property<string>("Username")
                         .IsRequired();
 
                     b.Property<string>("WorkOrderNumber");
