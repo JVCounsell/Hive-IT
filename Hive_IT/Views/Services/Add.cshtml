@@ -1,0 +1,87 @@
+﻿@model Hive_IT.Models.Services.AddServiceViewModel
+
+@{
+    ViewData["Title"] = "Add Service";
+}
+
+<fieldset>
+    <h1 class="text-center">Add a New Service</h1>
+    <form role="form" asp-action="Add">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="input-validation-error"></div>
+
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input type="text" asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <input type="text" asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Price"></label>
+            <input type="text" asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Service is NOT model specific</label>
+            <input type="checkbox" asp-for="NotSpecific" id="service-checkbox"/>
+        </div>
+
+        @if (Model.NotSpecific == true)
+        {
+            <div class="form-group">
+                <label asp-for="Manufacturer"></label>
+                <select asp-for="Manufacturer" class="form-control" disabled
+                        id="manufacturer-select">
+                    <option value="Not Manufacturer Specific">Not Manufacturer Specific</option>
+                </select>
+                <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Model"></label>
+                <select asp-for="Model" disabled class="form-control"
+                        id="model-select">
+                    <option value="Not Model Specific">Not Model Specific</option>
+                </select>
+                <span asp-validation-for="Model" class="field-validation-error"></span>
+            </div>
+
+        }
+        else
+        {
+            <div class="form-group">
+                <label asp-for="Manufacturer"></label>
+                <select asp-for="Manufacturer" asp-items="@Model.ManufacturerList" class="form-control"
+                        id="manufacturer-select"></select>
+                <span asp-validation-for="Manufacturer" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Model"></label>
+                <select asp-for="Model" asp-items="@Model.ModelList" class="form-control"
+                        id="model-select"></select>
+                <span asp-validation-for="Model" class="field-validation-error"></span>
+            </div>
+
+        }       
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left"> Add Service!</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+</fieldset>
+
+

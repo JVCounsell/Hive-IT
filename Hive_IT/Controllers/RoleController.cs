@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Hive_IT.Controllers
 {
     [Route("roles")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -41,14 +41,12 @@ namespace Hive_IT.Controllers
         }
 
         [HttpGet, Route("create")]
-        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost, Route("create")]
-        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ApplicationRole applicationRole)
         {
@@ -93,7 +91,6 @@ namespace Hive_IT.Controllers
         }
                 
         [HttpPost, Route("delete/{roleName}")]
-        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string roleName)
         {

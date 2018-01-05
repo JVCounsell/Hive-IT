@@ -1,0 +1,48 @@
+﻿@model Hive_IT.Models.Services.ServicesViewModel
+@{
+    ViewData["Title"] = "Show Services";
+}
+
+@if (Model.Specific == false)
+{
+    <h1 class="text-center">Available Services that are model/manufacturer unspecific</h1><br />
+}
+else
+{
+    <h1 class="text-center">Available Services for @Model.Manufacturer @Model.Model specifically</h1><br />
+}
+<div class="text-center" style="margin-bottom: 2em;">
+    <a asp-action="Index" class="btn btn-danger"><span class="glyphicon glyphicon-stop"></span> Pick New Specificity</a>
+    <br />
+</div>
+
+<ul class="list-group" id="services-list">
+    @foreach(var service in Model.Services)
+    {
+        <li class="list-group-item clearfix">
+            <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+                  data-toggle="tooltip" title="@service.Description"></span> 
+            <b>@service.Name :</b> $@service.Price 
+            
+
+            <div class="clearfix pull-right btn-group">
+                <a class="btn btn-info btn-sm" href="@Url.Action("Update", "Services", new {serviceid = service.ServiceId })">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="false"></span> Modify</a>
+                @using (Html.BeginForm("Delete", "Services", new { serviceid = service.ServiceId }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="btn btn-delete clearfix pull-right btn-sm" formnovalidate value="DELETE"
+                            onclick="return confirm('Delete Service? This is permanent and will remove from linked work orders!')">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                    </button>
+                }
+            </div>
+        </li>
+    }
+</ul>
+
+<div class="text-center" style="margin-top: 2em;">
+    <a asp-action="Add" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create New Service</a>
+</div>
+

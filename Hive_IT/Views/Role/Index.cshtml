@@ -10,21 +10,15 @@
 <table class="table table-bordered text-center col-xs-12" >
     <thead>
         <tr>
-            <th class="col-xs-6 text-center">Name of Role</th>
-            @if (User.IsInRole("Admin"))
-            {
-                <th textalign="center" class="col-xs-4 text-center">Action</th>
-            }
-                               
+            <th class="col-xs-6 text-center">Name of Role</th>            
+            <th textalign="center" class="col-xs-4 text-center">Action</th> 
         </tr>
     </thead>
     <tbody>
         @foreach(var role in Model.Roles)
         {
             <tr>
-                <td style="padding-left: 1em">@role</td>
-                @if (User.IsInRole("Admin"))
-                {
+                <td style="padding-left: 1em">@role</td>               
                 <td>
                     @{
                         if (role.ToLower() != "admin" && role.ToLower() != "manager")
@@ -40,19 +34,15 @@
                             }
                         }
                     }
-                </td>
-                }                    
+                </td>              
             </tr>
             }
     </tbody>
 </table>
 <br />
 
-@if (User.IsInRole("Admin"))
-{
-    <div class="col-xs-12">
-        <br />
-    </div>
-    <a class="btn btn-success bottom-left" href="@Url.Action("create", "roles")">
-    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a new role</a>
-}
+<div class="col-xs-12">
+    <br />
+</div>
+<a class="btn btn-success bottom-left" href="@Url.Action("create", "roles")">
+<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a new role</a>

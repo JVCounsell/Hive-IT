@@ -45,7 +45,54 @@
     // when manufacturer-select changes, call anonymous function
     $('#manufacturer-select').on('change', function () {
         AlterSelect();
-    });    
+    });   
+
+    //function that changes values of select list for services when checkbox altered
+    $('#service-checkbox').on('click', function () {        
+        if ($('#service-checkbox').prop('checked')) {
+            //empty options, then fill it with option designated for unspecific service, finally disable select
+            $('#manufacturer-select').empty();
+            $('#manufacturer-select').append($("<option></option>")
+                .attr("value", 'Not Manufacturer Specific').text('Not Manufacturer Specific'));
+            $('#manufacturer-select').prop('disabled', true);
+
+            $('#model-select').empty();
+            $('#model-select').append($("<option></option>")
+                .attr("value", 'Not Model Specific').text('Not Model Specific'));
+            $('#model-select').prop('disabled', true);
+        } else {
+            $.ajax({
+                url: '/Services/ReturnManufacturersAndModels',
+
+                success: function (data) {
+
+                    var manuTarget = $('#manufacturer-select');
+                    var modTarget = $('#model-select');
+
+                    //empty select lists
+                    manuTarget.empty();
+                    modTarget.empty();
+
+                    //conversion to proper JSON object
+                    var jsonObjects = JSON.parse(data);
+
+                    //create a options in the select items with values as was populated from the action
+                    //and grab it from the Json object
+                    $.each(jsonObjects.Manufacturers, function (index, value) {
+                        manuTarget.append($("<option></option>")
+                            .attr("value", value).text(value));
+                        manuTarget.prop('disabled', false);
+                    });
+
+                    $.each(jsonObjects.Models, function (index, value) {
+                        modTarget.append($("<option></option>")
+                            .attr("value", value).text(value));
+                        modTarget.prop('disabled', false);
+                    });
+                }
+            });
+        }
+    });
 
     //function that calls a controller via ajax and changes a select based off of first
     function AlterSelect() {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Hive_IT.Data
 {
     public class WorkOrder
-    {
+    {        
         [Key]
         [Display(Name = "Work Order Number")]
         public string WorkOrderNumber { get; set; }
@@ -22,6 +22,8 @@ namespace Hive_IT.Data
 
         public virtual ICollection<Device> Device { get; set; }
         public virtual ICollection<WorkOrderHistory> History { get; set; }
+
+        public virtual ICollection<WorkOrderService> WorkOrderServices { get; set; }
 
         public long CustomerId { get; set; }
         public Customer Customer { get; set; }

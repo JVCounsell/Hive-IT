@@ -10,6 +10,16 @@ body {
 
 /* Styling general look of website */
 
+.navbar-header #admin-button {
+    background-color: transparent;
+    border: none;
+}
+
+.navbar-header #admin-button:focus {
+    border: 1px solid black;
+}
+
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -21,7 +31,13 @@ body {
     border-top: 1px solid #080808;
 }
 
-.footer-span{
+.footer-span {
+    color: darkgray;
+}
+
+#admin-collapse .btn-default{
+    border: 1px solid black;
+    background-color: #222;
     color: darkgray;
 }
 
@@ -536,6 +552,19 @@ thead {
     color: white;
     border-radius: 3px;
     text-decoration: underline;
+}
+
+/*Services Styling*/
+
+.glyphicon-question-sign {
+    color: #62cff7;
+    border: 1px solid #2184a8;
+    border-radius: 100%;
+}
+
+#services-list li {
+    background-color: #cee9ff;
+    border: 1px solid blue;
 }
 
 

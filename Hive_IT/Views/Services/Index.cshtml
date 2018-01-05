@@ -1,0 +1,37 @@
+﻿@model Hive_IT.Models.Services.ServicesViewModel
+@{
+    ViewData["Title"] = "Show Services";
+}
+
+<fieldset>
+    <h1 class="text-center">Available Services</h1>
+
+    <form role="form" asp-action="Index">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group text-center">
+            <p style="font-size: 15px">Pick the Specificity (click without checking for unspecific services):</p>
+            <label data-toggle="collapse" data-target="#man-and-mod" aria-expanded="false">
+                <input type="checkbox" asp-for="Specific"  /> Service is Manufacturer/Model Specific
+            </label>
+        </div>
+
+        <div class="collapse" id="man-and-mod" role="dialog">
+            <div class="form-group col-xs-6">
+                <label asp-for="Manufacturer"></label>
+                <select asp-for="Manufacturer" asp-items="@Model.ManufacturerList" class="form-control" id="manufacturer-select"></select>
+            </div>
+
+            <div class="form-group col-xs-6">
+                <label asp-for="Model"></label>
+                <select asp-for="Model" asp-items="@Model.ModelList" class="form-control" id="model-select"></select>
+            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">Show Services</button>
+        </div>
+    </form>
+</fieldset>
+

@@ -17,11 +17,18 @@ namespace Hive_IT.Data
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<ModelofDevice> DeviceModels { get; set; }
         public DbSet<WorkOrderHistory> Histories { get; set; }
+        public DbSet<Service> Services { get; set; }
 
         
         public CustomerDataContext(DbContextOptions<CustomerDataContext> options): base(options)
         {
             Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WorkOrderService>()
+                .HasKey(x => new { x.WorkOrderNumber, x.ServiceId });
         }
     }
 }

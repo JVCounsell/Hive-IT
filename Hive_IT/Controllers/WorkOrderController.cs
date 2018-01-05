@@ -426,7 +426,7 @@ namespace Hive_IT.Controllers
             {
                 return View("NoManufacturers");
             }
-            //if there are no models in db, code still functions on page, but better to gice the warning
+            //if there are no models in db, code still functions on page, but better to give the warning
             if (_db.DeviceModels.Any() == false)
             {
                 return View("NoManufacturers");
@@ -483,7 +483,7 @@ namespace Hive_IT.Controllers
             {
                 return View("NoManufacturers");
             }
-            //if there are no models in db, code still functions on page, but better to gice the warning
+            //if there are no models in db, code still functions on page, but better to give the warning
             if (_db.DeviceModels.Any() == false)
             {
                 return View("NoManufacturers");
@@ -642,7 +642,7 @@ namespace Hive_IT.Controllers
             {
                 return View("NoManufacturers");
             }
-            //if there are no models in db, code still functions on page, but better to gice the warning
+            //if there are no models in db, code still functions on page, but better to give the warning
             if (_db.DeviceModels.Any() == false)
             {
                 return View("NoManufacturers");
@@ -673,7 +673,7 @@ namespace Hive_IT.Controllers
             {
                 return View("NoManufacturers");
             }
-            //if there are no models in db, code still functions on page, but better to gice the warning
+            //if there are no models in db, code still functions on page, but better to give the warning
             if (_db.DeviceModels.Any() == false)
             {
                 return View("NoManufacturers");
@@ -733,7 +733,7 @@ namespace Hive_IT.Controllers
             {
                 return View("NoManufacturers");
             }
-            //if there are no models in db, code still functions on page, but better to gice the warning
+            //if there are no models in db, code still functions on page, but better to give the warning
             if (_db.DeviceModels.Any() == false)
             {
                 return View("NoManufacturers");
@@ -764,7 +764,7 @@ namespace Hive_IT.Controllers
             {
                 return View("NoManufacturers");
             }
-            //if there are no models in db, code still functions on page, but better to gice the warning
+            //if there are no models in db, code still functions on page, but better to give the warning
             if (_db.DeviceModels.Any() == false)
             {
                 return View("NoManufacturers");

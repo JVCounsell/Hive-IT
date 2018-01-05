@@ -1,0 +1,66 @@
+﻿@model Hive_IT.Models.Services.EditServiceViewModel
+
+@{
+    ViewData["Title"] = "Update Service";
+}
+
+<fieldset>
+    <h1 class="text-center">Edit Service</h1><br />
+
+    <form asp-action="Update" role="form">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="input-validation-error"></div>
+
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input type="text" asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <input type="text" asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="field-validation-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Price"></label>
+            <input type="text" asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="field-validation-error"></span>
+        </div>
+
+        @if (Model.NotSpecific == true)
+        {
+            <div class="form-group">
+                <label>Service is NOT model specific</label>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label asp-for="Manufacturer"></label>
+                <input type="text" asp-for="Manufacturer" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Model"></label>
+                <input type="text" asp-for="Model" class="form-control" disabled />
+            </div>
+        }
+
+        @Html.HiddenFor(model => model.NotSpecific)
+        @Html.HiddenFor(model => model.ServiceId)
+        @Html.Hidden("serviceid", Model.ServiceId)
+
+        <div class="clearfix">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary pull-left"> Save Changes</button>
+
+            <a class="btn btn-danger pull-right" asp-action="Index">
+                <span class="glyphicon glyphicon-stop"></span> Cancel
+            </a>
+        </div>
+    </form>
+
+</fieldset>
