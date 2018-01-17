@@ -139,6 +139,25 @@
         });
     });
 
+    $('#services-select').on('change', function () {
+        $.ajax({
+            type: "POST",
+            url: '/WorkOrder/Invoice',
+            data: {
+                __RequestVerificationToken: $('#services-form input[name=__RequestVerificationToken]').val(),
+                servId: $('#services-select').val(),
+                orderNumber: $('#order-number').val()
+            },
+            success: function (data) {
+                //returns either true or false, if true reload the page, if false(couldn't find number) link to the list
+                if (data == true)
+                    location.reload();
+                else
+                    $('#main-content').load('/WorkOrder/List');
+            }
+        });
+    });
+
     var orderStatus = $('#status-select').val();
     switch (orderStatus){
         case "Created":

@@ -37,11 +37,26 @@
                 to <b style="color: darkblue">@history.FieldValueAfter</b> &#64 @history.TimeOfAction
             </li>
         }
+        else if (history.ActionTaken == "Added Service" || history.ActionTaken == "Removed Service")
+        {
+            <li class="history-service list-group-item text-center">
+                <mark>@history.Username</mark> @history.ActionTaken
+                @if (history.ActionTaken == "Added Service")
+                {
+                    <b style="color: green">@history.FieldValueAfter</b> 
+                }
+                else
+                {
+                    <b style="color: maroon">@history.FieldValueAfter</b> 
+                }
+                &#64 @history.TimeOfAction
+            </li>            
+        }
         else
         {
             <li class="history-update list-group-item text-center">
-                <mark>@history.Username</mark> @history.ActionTaken            
-                for: <i>@history.DeviceSerialIdentifier</i>            
+                <mark>@history.Username</mark> @history.ActionTaken
+                for: <i>@history.DeviceSerialIdentifier</i>
                  from <b>@history.FieldValueBefore</b> to <b>@history.FieldValueAfter</b> &#64 @history.TimeOfAction
             </li>
         }

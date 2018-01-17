@@ -397,9 +397,9 @@ namespace Hive_IT.Controllers
                 }
             }
             //sort latest first
-            historiesViewModel = historiesViewModel.OrderByDescending(his => his.TimeOfAction).ThenByDescending(his => his.HistId).ToList();
+            var Ordered = historiesViewModel.OrderByDescending(his => his.HistId).ToList();
                
-            return View(historiesViewModel);
+            return View(Ordered);
         }
 
         [HttpGet]
@@ -793,6 +793,259 @@ namespace Hive_IT.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("Details", "WorkOrder", new { order });
+
+        }
+
+        [HttpGet]
+        public ActionResult Invoice(string orderNumber)
+        {
+            var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == orderNumber);
+            //make sure there is a workorder to connect to
+            if (workOrder == null)
+            {
+                return RedirectToAction(nameof(List));
+            }
+            //if there are no services in db, return to a view that says this
+            if (_db.Services.Any() == false)
+            {
+                return View("NoServices");
+            }
+
+            //find associated customer, customer must exist as work order cannot be created without it    
+            var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == workOrder.CustomerId);
+
+            //create a select list item list so work order status can be a select item
+            var listOfStatuses = new List<SelectListItem>();
+            foreach (var status in workOrderStatuses)
+            {
+                var listStatus = new SelectListItem { Value = status, Text = status };
+                listOfStatuses.Add(listStatus);
+            }
+
+            var invoiceModel = new InvoiceViewModel
+            {
+                OrderNumber = orderNumber,
+                Status = workOrder.Status,
+                StatusList = listOfStatuses,
+                CustomerName = customer.FirstName + " " + customer.LastName,
+                Phone = _db.PhoneNumbers.FirstOrDefault(ph => ph.CustomerId == customer.CustomerId),
+                Email = _db.Emails.FirstOrDefault(em => em.CustomerId == customer.CustomerId),
+                ShippingAddress = _db.MailingAddresses.FirstOrDefault(ml => ml.CustomerId == customer.CustomerId),
+                LinkedDevices = _db.Devices.Where(dev => dev.WorkOrderNumber == orderNumber).ToList()
+            };
+
+            //assignment for tally
+            float due = 0;
+            //assignment to be used
+            var doneServices = new List<Service>();
+            var serviceCount = new Dictionary<int, int>();
+
+            //get all entities of Service that are linked
+            var services = _db.WorkOrders.Where(ord => ord.WorkOrderNumber == orderNumber).SelectMany(ord =>ord.WorkOrderServices).Select(x => x.Service);           
+            //then only if there are any
+            if(services != null)
+            {
+                //go through each
+                foreach (var ser in services)
+                {
+                    //find and save the total number of that service linked
+                    int num = _db.WorkOrders.Where(ord => ord.WorkOrderNumber == orderNumber)
+                        .SelectMany(ord => ord.WorkOrderServices).FirstOrDefault(wos => wos.WorkOrderNumber == orderNumber
+                        && wos.ServiceId == ser.ServiceId).NumberOf;
+
+                    //save service id and number to dictionary
+                    serviceCount.Add(ser.ServiceId, num);
+
+                    //add the service associated to the list, then add its price * number of them
+                    doneServices.Add(ser);
+                    due += (ser.Price * num);
+                }
+            }
+
+            invoiceModel.ServicesDone = doneServices;
+            invoiceModel.AmountDue = due;
+            invoiceModel.NumberOfServices = serviceCount;
+
+            //assignment of list of services that apply
+            var applicableServices = new List<SelectListItem>();
+            var messageItem = new SelectListItem {Text = "Select a Service", Value = "Select a Service" };
+            applicableServices.Add(messageItem);
+
+            //assignment of new list of devices
+            var noRepeatingDeviceList = new List<Device>();
+
+            //order by ascending first manufacturer then model so list follows suit
+            var orderedDevices = invoiceModel.LinkedDevices.OrderBy(dev => dev.Manufacturer).ThenBy(dev => dev.Model);
+            foreach(var device in orderedDevices)
+            {
+                if (!noRepeatingDeviceList.Any(dev => dev.Manufacturer == device.Manufacturer && dev.Model == device.Model))
+                {
+                    noRepeatingDeviceList.Add(device);
+                }
+            }
+
+            foreach (var device in noRepeatingDeviceList)
+            {
+                //get all services linked with the same manufacturer and model
+                var deviceServices = _db.Services.Where(serv => serv.Manufacturer == device.Manufacturer
+                && serv.Model == device.Model).OrderBy(serv =>serv.Name).ToList();
+
+                foreach (var deviceService in deviceServices)
+                {
+                    /*each service gets converted into a select list item so it can be selected, with text as the manufacturer
+                     then model then name as there could be a comparable name for another, and value is a string version of
+                    the service id as value does not along ints, service id is value as its easier to lookup*/
+                    var selectService = new SelectListItem
+                    {
+                        Text = deviceService.Manufacturer + " " + deviceService.Model + " " + deviceService.Name,
+                        Value = deviceService.ServiceId.ToString()
+                    };
+
+                    applicableServices.Add(selectService);
+                }
+            }
+
+            //do similar for services that don't have a model or manufacturer
+            var genericServices = _db.Services.Where(serv => serv.Manufacturer == null && serv.Model == null).OrderBy(serv =>serv.Name).ToList();
+            foreach (var generic in genericServices)
+            {
+                var selectService = new SelectListItem
+                {
+                    Text = generic.Manufacturer + " " + generic.Model + " " + generic.Name,
+                    Value = generic.ServiceId.ToString()
+                };
+
+                applicableServices.Add(selectService);
+            }
+
+            invoiceModel.AvailableServices = applicableServices;
+
+            return View(invoiceModel);
+        }
+
+        //this will be a method for JS, so send back a bool
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<bool> Invoice(string orderNumber, string servId)
+        {
+            var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == orderNumber);
+            //make sure there is a workorder to connect to
+            if (workOrder == null)
+            {
+                return false;
+            }
+            //if there are no services in db, return to a view that says this, can make work orders without them
+            if (_db.Services.Any() == false)
+            {
+                return false;
+            }
+
+            int serviceid = Convert.ToInt32(servId);
+            var service = _db.Services.FirstOrDefault(serv => serv.ServiceId == serviceid);
+            if (service == null)
+            {
+                return false;
+            }
+
+            var joining = _db.WorkOrders.Where(ord => ord.WorkOrderNumber == orderNumber).
+               SelectMany(ord => ord.WorkOrderServices).
+               FirstOrDefault(wos => wos.WorkOrderNumber == orderNumber && wos.ServiceId == serviceid);
+
+            if(joining == null)
+            {
+                workOrder.WorkOrderServices = new List<WorkOrderService>
+                {
+                    new WorkOrderService {
+                        WorkOrder = workOrder,
+                        WorkOrderNumber = workOrder.WorkOrderNumber,
+                        Service = service,
+                        ServiceId = service.ServiceId,
+                        NumberOf = 1
+                    }
+                };
+            }
+            else
+            {
+                joining.NumberOf++;
+            }
+             
+           
+            _db.SaveChanges();
+
+            // grab the Application User by the current user's username so UserId can be grabbed
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            
+
+            //fill out the History fields that are common for all connected to a device
+            var HistoryEntry = new WorkOrderHistory
+            {
+                UserId = user.Id,
+                Username = User.Identity.Name,
+                WorkOrderNumber = orderNumber,
+                HistoryID = DateTime.Now.ToString(numberFormat + "fff"),
+                TimeOfAction = DateTime.Now.ToString(timeFormat),
+                ActionTaken = "Added Service",
+                FieldValueAfter = service.Name + " $" + service.Price.ToString()
+            };
+
+            _db.Histories.Add(HistoryEntry);
+            _db.SaveChanges();
+                       
+            return true;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveService(string orderNumber, string servId)
+        {
+            var workOrder = _db.WorkOrders.FirstOrDefault(o => o.WorkOrderNumber == orderNumber);
+            //make sure there is a workorder to connect to
+            if (workOrder == null)
+            {
+                return RedirectToAction(nameof(List));
+            }
+            
+            int serviceid = Convert.ToInt32(servId);
+            var service = _db.Services.FirstOrDefault(serv => serv.ServiceId == serviceid);
+            if (service == null)
+            {
+                return RedirectToAction("Invoice", "WorkOrder", new { orderNumber = orderNumber });
+            }
+
+
+            var joining = _db.WorkOrders.Where(ord => ord.WorkOrderNumber == orderNumber).
+                SelectMany(ord => ord.WorkOrderServices).
+                FirstOrDefault(wos => wos.WorkOrderNumber == orderNumber && wos.ServiceId == serviceid);
+            if (joining.NumberOf > 1)
+            {
+                joining.NumberOf--;
+            }
+            else
+            {
+                _db.Remove(joining);
+            }
+            
+            _db.SaveChanges();
+
+            // grab the Application User by the current user's username so UserId can be grabbed
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            //fill out the History fields that are common for all connected to a device
+            var HistoryEntry = new WorkOrderHistory
+            {
+                UserId = user.Id,
+                Username = User.Identity.Name,
+                WorkOrderNumber = orderNumber,
+                HistoryID = DateTime.Now.ToString(numberFormat + "fff"),
+                TimeOfAction = DateTime.Now.ToString(timeFormat),
+                ActionTaken = "Removed Service",
+                FieldValueAfter = service.Name + " $" + service.Price.ToString()
+            };
+
+            _db.Histories.Add(HistoryEntry);
+            _db.SaveChanges();
+
+            return RedirectToAction("Invoice", "WorkOrder", new { orderNumber = orderNumber });
 
         }
 

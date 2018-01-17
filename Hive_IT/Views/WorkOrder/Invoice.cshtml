@@ -1,0 +1,187 @@
+﻿@model Hive_IT.Models.WorkOrders.InvoiceViewModel
+@{
+    ViewData["Title"] = "Invoice";
+}
+
+<div class="text-center">
+    <div class="clearfix">
+        <a class="btn btn-primary clearfix pull-left" asp-action="Details" asp-route-order="@Model.OrderNumber">
+            <span class="glyphicon glyphicon-arrow-left"></span> Return To Order Details
+        </a>
+    </div>
+    <h1>Invoice of @Model.OrderNumber</h1>
+    <h2>For @Model.CustomerName</h2>
+    <p>
+        @if (Model.Email != null)
+        {
+            <b>Email:</b> @Model.Email.Email 
+        }
+        @if (Model.Phone != null)
+        {
+            <b>Phone:</b> @Model.Phone.PhoneNumber
+        }
+   </p>
+    
+    @if (Model.ShippingAddress != null)
+    {
+        <p>
+            @Model.ShippingAddress.StreetAddress @Model.ShippingAddress.City @Model.ShippingAddress.ProvState,
+            @Model.ShippingAddress.Country @Model.ShippingAddress.Postal
+        </p><br />
+    }                
+
+    @if (User.IsInRole("Admin") || Model.Status != "Complete")
+    {
+        <form role="form" id="status-form" asp-action="Details">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="Status"></label>
+                <select id="status-select" asp-for="Status" asp-items="@Model.StatusList"></select>
+                <span class="glyphicon glyphicon-exclamation-sign" id="important" aria-hidden="true" data-toggle="tooltip"
+                      title="Change status as very last thing! Once 'complete' you can not edit anymore!"></span>
+            </div>
+
+            <input hidden id="order-number" value="@Model.OrderNumber" />
+        </form>
+    }
+    else
+    {
+        <label asp-for="Status"></label>
+        <input type="text" asp-for="Status" class="text-center" disabled><input/>
+    }
+
+
+    <ul class="list-group" id="invoice-devices">
+        @foreach (var device in Model.LinkedDevices)
+        {
+            <li class="list-group-item clearfix">
+                <mark class="device-type">@device.Manufacturer @device.Model</mark> Status:
+               @switch (device.Status)
+               {
+                   case "Diagnosed":
+                    <mark class="device-status device-status-diagnosed">@device.Status</mark>
+                       break;
+                   case "Being Repaired":
+                    <mark class="device-status device-status-beingfix">@device.Status</mark>
+                       break;
+                   case "Repaired":
+                    <mark class="device-status device-status-repaired">@device.Status</mark>
+                       break;
+                   case "Not Fixable":
+                    <mark class="device-status device-status-notfix">@device.Status</mark>
+                       break;
+                   case "Picked Up":
+                    <mark class="device-status device-status-picked">@device.Status</mark>
+                       break;
+                   default:
+                    <mark class="device-status device-status-created">@device.Status</mark>
+                       break;
+               } <br />
+
+                <label asp-for="@device.Problem"></label>
+                <textarea readonly class="col-xs-12 text-center" style="margin-bottom: 5px">@device.Problem</textarea>
+                <hr />
+                <label asp-for="@device.Notes"></label>
+                <textarea readonly class="col-xs-12 text-center">@device.Notes</textarea>
+            </li>
+        }
+    </ul>
+
+    <label>Services</label> 
+    @if (User.IsInRole("Admin") || Model.Status != "Complete")
+    {
+        <button data-toggle="collapse" data-target="#services-select-div" class="btn btn-sm btn-success">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+        </button>
+
+
+        <form role="form" id="services-form" asp-action="Invoice">
+            @Html.AntiForgeryToken()
+
+            <div id="services-select-div" class="collapse form-group" role="dialog">
+                <label>Applicable Services</label>
+                <select id="services-select" asp-items="@Model.AvailableServices" class="col-xs-12"></select>
+            </div> 
+           
+            <input hidden id="order-number" value="@Model.OrderNumber" />
+        </form>    
+    }<br />
+
+    @if (Model.ServicesDone != null)
+    {
+        <ul class="list-group" id="services-list">
+            @foreach (var service in Model.ServicesDone)
+            {
+                if (service.Manufacturer != null && service.Model != null)
+                {
+                    <li class="clearfix list-group-item"> 
+                        <mark>@service.Manufacturer @service.Model @service.Name <b>$@service.Price</b></mark>                        
+
+                        @if(Model.NumberOfServices[service.ServiceId] > 1){
+                            <b>x @Model.NumberOfServices[service.ServiceId]</b>
+                        }
+
+                      @if (User.IsInRole("Admin") || Model.Status != "Complete")
+                      {
+                        <div class="clearfix pull-right">
+                            @using (Html.BeginForm("RemoveService", "workorder", new { orderNumber = Model.OrderNumber, servId = service.ServiceId }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit" class="btn btn-danger col-xs-12 btn-sm" formnovalidate value="Remove"
+                                        onclick="return confirm('Remove Service from Workorder?')">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </button>
+                            }
+                        </div>
+                      }                       
+                    </li>
+                }
+                else
+                {
+                    <li class="clearfix list-group-item">
+                        <mark>@service.Name <b>$@service.Price</b></mark>
+
+                        @if (Model.NumberOfServices[service.ServiceId] > 1)
+                        {
+                            <b>x @Model.NumberOfServices[service.ServiceId]</b>
+                        }
+
+                        @if (User.IsInRole("Admin") || Model.Status != "Complete")
+                        {
+                            <div class="clearfix pull-right">
+                                @using (Html.BeginForm("RemoveService", "workorder", new { orderNumber = Model.OrderNumber, servId = service.ServiceId }))
+                            {
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit" class="btn btn-danger col-xs-12 btn-sm" formnovalidate value="Remove"
+                                            onclick="return confirm('Remove Service from Workorder?')">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </li>
+                }
+            }
+        </ul><br />
+
+        <div id="Fees">
+            <p>
+                <b>Before Tax:</b>
+                <input readonly type="text" class="text-center" value="$@Model.AmountDue" />
+            </p>
+            <p>
+                <b>(+ 11%) Tax</b>
+                <input readonly type="text" class="text-center" value="$@(Model.AmountDue * 0.11)" />
+            </p>
+            <p>
+                <b>= Total Due:</b>
+                <input readonly type="text" class="text-center" value="$@(Model.AmountDue * 1.11)" />
+            </p>
+        </div>        
+    }
+</div>
+ 
+

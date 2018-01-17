@@ -10,6 +10,8 @@ namespace Hive_IT.Data
         public int ServiceId { get; set; }
         public string WorkOrderNumber { get; set; }
 
+        public int NumberOf { get; set; }
+
         public WorkOrder WorkOrder { get; set; }
         public Service Service { get; set; }
     }

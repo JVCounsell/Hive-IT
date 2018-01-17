@@ -378,6 +378,11 @@ thead {
     border-color: black;
 }
 
+#invoice-button {
+    margin-bottom: 12px;
+    border-color: black;
+}
+
 #details-display i{
     text-decoration: underline;
 }
@@ -419,6 +424,27 @@ thead {
 }
 
 /*Status Colors*/
+#status-mark {
+    margin-bottom: 16px;
+    border: 1px solid lightgray;
+    background-color: white;
+    color: black;
+}
+
+#status-mark-paid {
+    margin-bottom: 16px;
+    border: 1px solid #89c491;
+    background-color: #e8ffeb;
+    color: #198e38;
+}
+
+#status-mark-complete {
+    margin-bottom: 16px;
+    border: 1px solid #999999;
+    background-color: #a8a8a8;
+    color: white;
+}
+
 .status-created {
     border: 1px solid lightgray;
     background-color: white;
@@ -554,6 +580,20 @@ thead {
     text-decoration: underline;
 }
 
+.history-service {
+    background-color: #cee9ff;
+    border: 1px solid #002c75;
+    color: black;
+}
+
+.history-service mark {
+    background-color: #0148bc;
+    color: white;
+    border-radius: 5px;
+    border-bottom: 1px solid black;
+}
+
+
 /*Services Styling*/
 
 .glyphicon-question-sign {
@@ -562,9 +602,40 @@ thead {
     border-radius: 100%;
 }
 
+#important {
+    color: orangered;
+}
+
 #services-list li {
     background-color: #cee9ff;
     border: 1px solid blue;
+}
+
+#invoice-devices li{
+    background-color: lightgray;
+    border: 1px solid #999999;
+}
+
+.device-type{
+    background-color: #555555;
+    color: white;
+    border-radius: 10px;
+    margin: 5px;
+    border: 1px solid black;
+}
+
+#services-list mark{
+    border: none;
+    background-color: transparent;
+    color: darkblue;
+}
+
+#Fees p input{
+    border: 1px solid green;
+}
+
+#Fees p:last-of-type input {
+    border: 2px solid darkgreen;
 }
 
 

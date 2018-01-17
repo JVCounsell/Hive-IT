@@ -30,12 +30,23 @@
     </div>
     <h1>Work Order: @Model.OrderNumber</h1><br />
 
-    @if (Model.Status == "Complete" && !User.IsInRole("Admin"))
+    @if (!User.IsInRole("Admin"))
     {       
         <label asp-for="Status"></label>
-        <input type="text"  class="text-center" disabled
-               asp-for="Status" asp-items="@Model.StatusList" style="margin-bottom: 16px" />
+        if (Model.Status == "Created")
+        {
+            <mark id="status-mark">@Model.Status</mark>
+        }
+        else if (Model.Status == "Paid")
+        {
+            <mark id="status-mark-paid">@Model.Status</mark>
+        }
+        else
+        {
+            <mark id="status-mark-complete">@Model.Status</mark>
+        }
         <b>Last Updated &#64 </b>@Model.StatusChangedAt
+        <br />
     }
     else
     {
@@ -52,6 +63,8 @@
         </form>        
     }
    <a class="btn btn-default clearfix text-center" id="history-button" asp-action="History" asp-route-order="@Model.OrderNumber">Order History</a>
+    <a class="btn btn-primary clearfix text-center" id="invoice-button" asp-action="Invoice" asp-route-orderNumber="@Model.OrderNumber">Invoice 
+    <span class="glyphicon glyphicon-usd"></span></a>
    
     <div class="panel panel-default" id="order-customer">
         <div class="panel-heading">

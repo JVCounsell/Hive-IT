@@ -29,6 +29,7 @@ namespace Hive_IT.Data
         {
             modelBuilder.Entity<WorkOrderService>()
                 .HasKey(x => new { x.WorkOrderNumber, x.ServiceId });
+                       
         }
     }
 }
