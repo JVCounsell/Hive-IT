@@ -11,6 +11,7 @@ namespace Hive_IT.Data
     {
         public ApplicationDataContext(DbContextOptions<ApplicationDataContext> options) : base(options)
         {
+            Database.EnsureCreated();
         }
     }
 }
