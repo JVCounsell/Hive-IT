@@ -6,4 +6,4 @@ and password of "password" with the intention that it is just a temporary user t
 
 NOTE: If having issues getting the program to run, delete the migration files and type the following in NuGet console:
 Add-Migration InitialCreate -context ApplicationDataContext
-(Once previous command is finished) Add-Migration InitialCreate -context CustomerDataContext
+( Then when that is finished) Add-Migration InitialCreate -context CustomerDataContext
